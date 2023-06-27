@@ -10,6 +10,7 @@ import {
   toastMessageError,
   toastMessageSuccess,
 } from "../services/ToastMessage/ToastMessage";
+import { imageCompressor } from "../services/ImageCompressor/ImageCompressor";
 const FAQModal = ({ modalState, toggleModal, editDocData }) => {
   const { currentUser } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
@@ -18,37 +19,13 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
 
   const [postData, setPostData] = useState({});
   const [image, setImage] = useState(null);
-  const handleImageChange = (e) => {
-    const { name } = e.target;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const img = new Image();
-      img.onload = function () {
-        const canvas = document.createElement("canvas");
-        const MAX_WIDTH = 800;
-        const MAX_HEIGHT = 800;
-        let width = img.width;
-        let height = img.height;
-        if (width > MAX_WIDTH) {
-          height *= MAX_WIDTH / width;
-          width = MAX_WIDTH;
-        }
-        if (height > MAX_HEIGHT) {
-          width *= MAX_HEIGHT / height;
-          height = MAX_HEIGHT;
-        }
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, width, height);
-        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.9);
-        setImage(compressedDataUrl);
-        setPostData({ ...postData, [name]: compressedDataUrl });
-      };
-      img.src = reader.result;
-    };
-    reader?.readAsDataURL(e?.target?.files[0]);
+  //OnClick Functions
+  const handleImageChange = async (e) => {
+    const { name } = e.target;
+    const image = await imageCompressor(e?.target?.files[0]);
+    setImage(image);
+    setPostData({ ...postData, [name]: image });
   };
 
   const handleChange = (e) => {
@@ -56,6 +33,28 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
     setPostData({ ...postData, [name]: value });
   };
 
+  //handle add and update doc function
+  function handleUpdateOrAddDoc(updateOrAddFunction, submittedData, message) {
+    return new Promise((resolve, reject) => {
+      updateOrAddFunction(submittedData)
+        .then(() => {
+          toastMessageSuccess(message);
+          setImage(null);
+          setPostData({});
+          toggleModal();
+          resolve();
+        })
+        .catch(() => {
+          toastMessageError("Error updating FAQ.");
+          reject();
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    });
+  }
+
+  //form submit handler/function
   const handleSubmit = async (e) => {
     setFormErrors(validateFAQPost(postData));
 
@@ -76,19 +75,9 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
       Object.keys(validateFAQPost(postData))?.length <= 0
     ) {
       const updateData = doc(firestoreDb, "post", postData?.postId);
-      await updateDoc(updateData, submittedData)
-        .then(() => {
-          toastMessageSuccess("FAQ Updated Successfully");
-          setImage(null);
-          setPostData({});
-          toggleModal();
-        })
-        .catch(() => {
-          toastMessageError("Can't update FAQ.");
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+      await handleUpdateOrAddDoc(() =>
+        updateDoc(updateData, submittedData, "FAQ Updated Successfully")
+      );
     }
     if (
       !postData?.postId &&
@@ -96,19 +85,13 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
       postData?.body?.trim()?.length > 0 &&
       Object.keys(validateFAQPost(postData))?.length === 0
     ) {
-      await addDoc(collection(firestoreDb, "post"), submittedData)
-        .then(() => {
-          toastMessageSuccess("FAQ Added Successfully");
-          setImage(null);
-          setPostData({});
-          toggleModal();
-        })
-        .catch(() => {
-          toastMessageError("Error adding FAQ.");
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+      await handleUpdateOrAddDoc(() =>
+        addDoc(
+          collection(firestoreDb, "post"),
+          submittedData,
+          "FAQ Added Successfully"
+        )
+      );
     }
 
     if (Object.keys(formErrors).length >= 0) {
@@ -120,6 +103,9 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
     toggleModal();
   };
 
+
+
+  // Effects
   useEffect(() => {
     setIsLoading(false);
     setChecked(editDocData?.image ? true : false);
