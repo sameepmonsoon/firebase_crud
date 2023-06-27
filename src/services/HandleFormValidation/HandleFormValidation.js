@@ -58,7 +58,7 @@ const validateFAQPost = (values) => {
     errors.title = "FAQ title is required";
   } else if (values.title.trim().length === 0) {
     errors.title = "FAQ title can't contain empty space";
-  } else if (values.title.length < 10) {
+  } else if (values.title.trim().length < 10) {
     errors.title = "FAQ title must contain atleast 10 characters.";
   } else {
     let userRegEx = /^[a-zA-Z\s.?a-zA-z]+\.?\??$/;
@@ -71,6 +71,8 @@ const validateFAQPost = (values) => {
     errors.body = "FAQ content is required";
   } else if (values?.body?.trim().length === 0) {
     errors.body = "FAQ content can't contain empty space";
+  } else if (values?.body?.trim().length < 20) {
+    errors.body = "FAQ content must contain atleast 20 characters.";
   }
 
   return errors;

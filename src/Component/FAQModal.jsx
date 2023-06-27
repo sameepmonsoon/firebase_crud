@@ -112,15 +112,6 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
     });
   }, [editDocData]);
 
-  // effect to scroll to the error location
-  useEffect(() => {
-    if (Object?.keys(formErrors).length != 0) {
-      const id = document?.getElementById(Object?.keys(formErrors)[0]);
-      const rectDetail = id.getBoundingClientRect();
-      window.scrollTo({ top: rectDetail?.top, behavior: "smooth" });
-      console.log(rectDetail);
-    }
-  }, [formErrors]);
   return (
     <>
       {modalState && (
