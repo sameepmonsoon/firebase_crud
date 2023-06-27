@@ -34,11 +34,11 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
   };
 
   //handle add and update doc function
-  function handleUpdateOrAddDoc(updateOrAddFunction, submittedData, message) {
+  function handleUpdateOrAddDoc(updateOrAddFunction, submittedData) {
     return new Promise((resolve, reject) => {
       updateOrAddFunction(submittedData)
         .then(() => {
-          toastMessageSuccess(message);
+          toastMessageSuccess("FAQ Added Successfully.");
           setImage(null);
           setPostData({});
           toggleModal();
@@ -75,9 +75,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
       Object.keys(validateFAQPost(postData))?.length <= 0
     ) {
       const updateData = doc(firestoreDb, "post", postData?.postId);
-      await handleUpdateOrAddDoc(() =>
-        updateDoc(updateData, submittedData, "FAQ Updated Successfully")
-      );
+      await handleUpdateOrAddDoc(() => updateDoc(updateData, submittedData));
     }
     if (
       !postData?.postId &&
@@ -86,11 +84,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
       Object.keys(validateFAQPost(postData))?.length === 0
     ) {
       await handleUpdateOrAddDoc(() =>
-        addDoc(
-          collection(firestoreDb, "post"),
-          submittedData,
-          "FAQ Added Successfully"
-        )
+        addDoc(collection(firestoreDb, "post"), submittedData)
       );
     }
 
@@ -102,8 +96,6 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
   const handleToggleModal = () => {
     toggleModal();
   };
-
-
 
   // Effects
   useEffect(() => {
@@ -120,6 +112,15 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
     });
   }, [editDocData]);
 
+  // effect to scroll to the error location
+  useEffect(() => {
+    if (Object?.keys(formErrors).length != 0) {
+      const id = document?.getElementById(Object?.keys(formErrors)[0]);
+      const rectDetail = id.getBoundingClientRect();
+      window.scrollTo({ top: rectDetail?.top, behavior: "smooth" });
+      console.log(rectDetail);
+    }
+  }, [formErrors]);
   return (
     <>
       {modalState && (
@@ -128,6 +129,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
             modalState === false ? "hidden" : "flex"
           }`}>
           <form
+            id="form"
             onSubmit={handleSubmit}
             className=" w-[45rem] overflow-y-auto overflow-x-hidden h-[42rem] flex flex-col justify-start items-center p-2 bg-blue-600 rounded-md gap-[2rem] py-5 border-2 border-gray-300">
             <p className="relative min-h-[3rem] bg-blue-700 border-[1px] border-blue-400 w-full rounded-md flex justify-center items-center text-2xl font-[500] text-white">
