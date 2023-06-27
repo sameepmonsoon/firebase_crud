@@ -10,6 +10,7 @@ import {
   toastMessageError,
   toastMessageSuccess,
 } from "../services/ToastMessage/ToastMessage";
+import { imageCompressor } from "../services/ImageCompressor/ImageCompressor";
 const FAQModal = ({ modalState, toggleModal, editDocData }) => {
   const { currentUser } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
@@ -20,10 +21,33 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
   const [image, setImage] = useState(null);
   const handleImageChange = (e) => {
     const { name } = e.target;
+
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setImage(reader?.result);
-      setPostData({ ...postData, [name]: reader?.result });
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = function () {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 800;
+        let width = img.width;
+        let height = img.height;
+        if (width > MAX_WIDTH) {
+          height *= MAX_WIDTH / width;
+          width = MAX_WIDTH;
+        }
+        if (height > MAX_HEIGHT) {
+          width *= MAX_HEIGHT / height;
+          height = MAX_HEIGHT;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.9);
+        setImage(compressedDataUrl);
+        setPostData({ ...postData, [name]: compressedDataUrl });
+      };
+      img.src = reader.result;
     };
     reader?.readAsDataURL(e?.target?.files[0]);
   };
@@ -48,8 +72,8 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
 
     if (
       postData?.postId &&
-      postData?.title.trim().length > 0 &&
-      postData?.body.trim().length > 0 &&
+      postData?.title?.trim()?.length > 0 &&
+      postData?.body?.trim()?.length > 0 &&
       Object.keys(validateFAQPost(postData))?.length <= 0
     ) {
       const updateData = doc(firestoreDb, "post", postData?.postId);
@@ -69,9 +93,9 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
     }
     if (
       !postData?.postId &&
-      postData?.title.trim().length > 0 &&
-      postData?.body.trim().length > 0 &&
-      Object.keys(validateFAQPost(postData)).length === 0
+      postData?.title?.trim()?.length > 0 &&
+      postData?.body?.trim()?.length > 0 &&
+      Object.keys(validateFAQPost(postData))?.length === 0
     ) {
       await addDoc(collection(firestoreDb, "post"), submittedData)
         .then(() => {
@@ -115,7 +139,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
     <>
       {modalState && (
         <div
-          className={`fixed w-full h-full bg-gray-100/10 backdrop-blur-sm top-0 right-0 justify-center items-center ${
+          className={`fixed w-full z-0 h-full bg-gray-100/10 backdrop-blur-sm top-0 right-0 justify-center items-center ${
             modalState === false ? "hidden" : "flex"
           }`}>
           <form
@@ -143,7 +167,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
                   id="title"
                   value={editDocData && postData?.title}
                   required
-                  maxLength={30}
+                  maxLength={60}
                   onChange={handleChange}
                   className="border-[1px] outline-0 p-1 px-3 h-[3rem] w-full rounded-sm focus:outline focus:outline-2 focus:outline-blue-200 focus:outline-offset-1 focus:border-transparent"
                   placeholder="Enter the title"
@@ -166,6 +190,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
                   name="body"
                   value={editDocData && postData?.body}
                   onChange={handleChange}
+                  maxLength={3000}
                   placeholder="Enter the FAQ Body"
                   className="w-full border-[1px]  px-3 overflow-auto border-purple/30 rounded-sm focus:outline focus:outline-2 focus:outline-blue-200 focus:outline-offset-1 focus:border-transparent p-2 h-auto min-h-[10rem] max-h-none resize-none"></textarea>
                 {formErrors?.body && (
@@ -187,7 +212,9 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
                 </label>
               </div>
               {checked && (
-                <>
+                <label
+                  htmlFor="image"
+                  className="w-full flex justify-evenly items-center flex-col gap-2 max-h-[20rem] rounded-sm">
                   {image != null && (
                     <img
                       src={image}
@@ -195,9 +222,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
                       className="h-40 w-40 object-cover"
                     />
                   )}
-                  <label
-                    htmlFor="image"
-                    className="w-full flex justify-center items-center flex-col bg-white h-20 rounded-sm">
+                  <div className="w-full bg-white min-h-[6rem] rounded-sm border-[1px] border-dotted border-black flex justify-center items-center flex-col gap-1">
                     <span className="flex capitalize flex-col w-full h-auto justify-center items-center text-md font-[500] text-gray-700 gap-1 cursor-pointer">
                       <LuImagePlus size={35} />
                       {image != null ? "Change Image" : "add Image"}
@@ -210,17 +235,18 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
                       hidden
                       onChange={handleImageChange}
                     />
-                  </label>
-                </>
+                  </div>
+                </label>
               )}
 
               <button
+                disabled={isLoading}
                 type="submit"
-                className="w-full bg-blue-400 flex justify-center  items-center h-[3rem] p-0 rounded-md text-xl font-[500] text-white border-[1px] border-blue-200 hover:bg-blue-500 hover:border-blue-300">
+                className="w-full capitalize bg-blue-400 flex justify-center  items-center h-[3rem] p-0 rounded-md text-xl font-[500] text-white border-[1px] border-blue-200 hover:bg-blue-500 hover:border-blue-300">
                 {isLoading ? (
                   <span className="w-full flex justify-center items-center gap-2 text-lg animate-pulse">
                     <PiSpinnerBold size={30} className="animate-spin " />{" "}
-                    Uploading
+                    {editDocData ? "Updating" : "uploading"}
                   </span>
                 ) : (
                   <span className="w-full flex justify-center items-center gap-2 text-lg ">

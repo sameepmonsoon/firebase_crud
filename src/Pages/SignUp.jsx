@@ -17,8 +17,9 @@ const SignUp = () => {
   const [formErrors, setFormErrors] = useState({});
   const [togglePassword, setTogglePassword] = useState("text");
   const [isLoading, setIsLoading] = useState(false);
-
   const navigate = useNavigate();
+
+  // functions
   const handleTogglePassword = () => {
     if (togglePassword === "text") {
       setTogglePassword("password");
@@ -191,8 +192,11 @@ const SignUp = () => {
         </label>
 
         <button
+          disabled={isLoading}
           type="submit"
-          className="w-full bg-blue-400 flex justify-center  items-center min-h-[3rem] p-0 rounded-md text-xl font-[500] text-white border-[1px] border-blue-200 hover:bg-blue-500 hover:border-blue-300">
+          className={`w-full capitalize bg-blue-400 flex justify-center  items-center min-h-[3rem] p-0 rounded-md text-xl font-[500] text-white border-[1px] border-blue-200 hover:bg-blue-500 hover:border-blue-300 ${
+            isLoading ? "cursor-not-allowed" : "cursor-pointer"
+          } `}>
           {isLoading ? (
             <PiSpinnerBold size={30} className="animate-spin " />
           ) : (

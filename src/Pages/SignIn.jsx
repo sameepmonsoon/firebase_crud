@@ -2,9 +2,9 @@ import HomeLayout from "../Layout/HomeLayout";
 import { useContext, useState } from "react";
 import { AuthContext } from "../Context/UserAuthContext";
 import { Link } from "react-router-dom";
-import { collection, getDocs, query, where } from "firebase/firestore";
+// import { collection, getDocs, query, where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { firestoreDb } from "../Utils/Firebase";
+// import { firestoreDb } from "../Utils/Firebase";
 import { PiSpinnerBold } from "react-icons/pi";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import {
@@ -44,18 +44,13 @@ const SignIn = () => {
     if (formValues.password.trim().length > 0) {
       setFormError({});
       await login(formValues.email, formValues.password)
-        .then(async (res) => {
-          const userId = query(
-            collection(firestoreDb, "users"),
-            where("uid", "==", res.user.uid)
-          );
-          const allDocs = await getDocs(userId);
-          // setIsAdmin(
-          //   allDocs.docs.map((doc) => {
-          //     if (doc.data().roles === "admin") return true;
-          //     else false;
-          //   })
+        .then(async () => {
+          // const userId = query(
+          //   collection(firestoreDb, "users"),
+          //   where("uid", "==", res.user.uid)
           // );
+          // const allDocs = await getDocs(userId);
+
           toastMessageSuccess("Welcome!");
           navigate("/");
         })
@@ -87,7 +82,6 @@ const SignIn = () => {
         <p className="w-full flex justify-center items-center text-4xl capitalize text-white font-[600] border-b-2 py-2">
           sign In
         </p>
-
         <label
           htmlFor="email"
           className="w-full flex justify-center items-center ">
@@ -130,11 +124,14 @@ const SignIn = () => {
         </label>
 
         <button
+          disabled={isLoading}
           type="submit"
-          className="w-full bg-blue-400 flex justify-center  items-center min-h-[3rem] p-0 rounded-md text-xl font-[500] text-white border-[1px] border-blue-200 hover:bg-blue-500 hover:border-blue-300">
+          className={`w-full capitalize bg-blue-400 flex justify-center ${
+            isLoading ? "cursor-not-allowed" : "cursor-pointer"
+          }  items-center min-h-[3rem] p-0 rounded-md text-xl font-[500] text-white border-[1px] border-blue-200 hover:bg-blue-500 hover:border-blue-300`}>
           {isLoading ? (
             <span className="w-full flex justify-center items-center gap-2 text-lg animate-pulse">
-              <PiSpinnerBold size={30} className="animate-spin " /> Loading
+              <PiSpinnerBold size={30} className="animate-spin " /> Processing
             </span>
           ) : (
             "Sign In"

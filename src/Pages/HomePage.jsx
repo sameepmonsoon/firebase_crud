@@ -16,6 +16,7 @@ import {
 const HomePage = () => {
   const { isAdminRole, logOut, isLoading } = useContext(AuthContext);
   const [openModal, setOpenModal] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [currentData, setCurrentData] = useState([]);
   const [selctedIndex, setSelectedIndex] = useState(null);
   const [editData, setEditData] = useState(null);
@@ -32,6 +33,7 @@ const HomePage = () => {
   };
 
   const handleDelete = async (id) => {
+    setIsButtonDisabled(true);
     const deleteDocument = doc(firestoreDb, "post", id);
     await deleteDoc(deleteDocument)
       .then(() => {
@@ -39,6 +41,9 @@ const HomePage = () => {
       })
       .catch(() => {
         toastMessageError("Error deleting FAQ.");
+      })
+      .finally(() => {
+        setIsButtonDisabled(false);
       });
 
     fetchFAQ();
@@ -73,7 +78,7 @@ const HomePage = () => {
   console.log(isLoading);
   return (
     <HomeLayout>
-      <div className="w-[60%]  h-auto bg-blue-800 flex justify-start items-start relative top-0 flex-col gap-[1.5rem] p-2 m-1 rounded-sm overflow-y-auto overflow-x-hidden">
+      <div className="w-[60%] h-[45rem] bg-blue-800 flex justify-start items-start relative top-0 flex-col gap-[1.5rem] p-2 m-1 rounded-[3px] overflow-y-auto overflow-x-hidden">
         <p className="md:min-h-[3rem]  min-h-[4rem] relative w-full flex flex-col  md:flex-row justify-start md:justify-center gap-2 md:gap-10  items-start md:items-center text-md sm:text-xl md:text-3xl font-[500] text-white">
           Frequently Asked Question
           {isAdminRole && (
@@ -97,7 +102,7 @@ const HomePage = () => {
           return (
             <div
               key={index}
-              className="h-auto bg-white w-full flex flex-col justify-around items-center rounded-sm ">
+              className=" h-auto bg-white w-full flex flex-col justify-around items-center rounded-sm ">
               <div className="w-full flex justify-around h-40 md:h-20 items-center md:flex-row flex-col p-1">
                 <div className="order-1 w-full md:w-auto md:flex-1  flex justify-start px-2 items-center h-full text-[16px]  sm:text-[18px] overflow-hidden ">
                   {currentPostData?.title}
@@ -116,14 +121,19 @@ const HomePage = () => {
                     </span>
                   )}
                   {isAdminRole && (
-                    <span
+                    <button
+                      disabled={isButtonDisabled}
                       onClick={() => handleDelete(postId)}
-                      className="  text-red-600 sm:w-[4rem] sm:h-[80%] flex justify-center items-center cursor-pointer group border-2 rounded-md border-red-700">
+                      className={` text-red-600 sm:w-[4rem] sm:h-[80%] flex justify-center items-center ${
+                        isButtonDisabled
+                          ? "cursor-not-allowed"
+                          : "cursor-pointer"
+                      } group border-2 rounded-md border-red-700`}>
                       <MdDeleteOutline
                         size={30}
                         className="group-hover:text-red-800 text-red-600"
                       />
-                    </span>
+                    </button>
                   )}
                   <span
                     className="  text-blue-900 sm:w-[4rem] w-[2.1rem] h-[43%] sm:h-[80%] flex justify-center items-center cursor-pointer group border-2 rounded-md border-blue-800"
@@ -145,7 +155,7 @@ const HomePage = () => {
                     <img
                       src={currentPostData?.image}
                       alt=""
-                      className="w-40 h-40"
+                      className="w-[14rem] h-[14rem]"
                     />
                   )}
                   {currentPostData?.body}
