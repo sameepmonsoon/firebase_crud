@@ -10,7 +10,6 @@ import {
   toastMessageError,
   toastMessageSuccess,
 } from "../services/ToastMessage/ToastMessage";
-import { imageCompressor } from "../services/ImageCompressor/ImageCompressor";
 const FAQModal = ({ modalState, toggleModal, editDocData }) => {
   const { currentUser } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
