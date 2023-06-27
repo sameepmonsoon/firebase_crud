@@ -34,9 +34,11 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
   };
 
   const handleSubmit = async (e) => {
+    setFormErrors(validateFAQPost(postData));
+
     e.preventDefault();
     setIsLoading(true);
-    setFormErrors(validateFAQPost(postData));
+
     const submittedData = {
       title: postData?.title,
       body: postData?.body,
@@ -45,10 +47,10 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
     };
 
     if (
-      Object.keys(formErrors).length <= 0 &&
       postData?.postId &&
       postData?.title.trim().length > 0 &&
-      postData?.body.trim().length > 0
+      postData?.body.trim().length > 0 &&
+      Object.keys(validateFAQPost(postData))?.length <= 0
     ) {
       const updateData = doc(firestoreDb, "post", postData?.postId);
       await updateDoc(updateData, submittedData)
@@ -66,10 +68,10 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
         });
     }
     if (
-      Object.keys(formErrors).length <= 0 &&
       !postData?.postId &&
       postData?.title.trim().length > 0 &&
-      postData?.body.trim().length > 0
+      postData?.body.trim().length > 0 &&
+      Object.keys(validateFAQPost(postData)).length === 0
     ) {
       await addDoc(collection(firestoreDb, "post"), submittedData)
         .then(() => {

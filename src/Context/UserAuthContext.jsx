@@ -31,6 +31,7 @@ const UserAuthContextProvider = ({ children }) => {
   //firebase logout function
 
   function logOut() {
+    localStorage.removeItem("currentUser");
     return signOut(firestoreAuth);
   }
 

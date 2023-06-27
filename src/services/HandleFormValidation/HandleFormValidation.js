@@ -3,9 +3,10 @@ const validateUserForm = (values) => {
 
   if (!values.username) {
     errors.username = "User name is required";
-  } else if (values.username.trim().length === 0) {
-    errors.username = "Username contain be empty.";
   } else {
+    if (values.username.trim().length === 0) {
+      errors.username = "Username contain be empty.";
+    }
     let userRegEx = /^[a-zA-Z0-9_.-]*$/;
     if (!userRegEx.test(values?.username)) {
       errors.username = "Invalid Username";
@@ -23,7 +24,8 @@ const validateUserForm = (values) => {
 
   if (!values.password) {
     errors.password = "Password is required.";
-  } else if (values.password.trim().length === 0) {
+  }
+  if (values.password.trim().length === 0) {
     errors.password = "Password can't contain empty space";
   } else {
     let passwordRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
@@ -55,6 +57,8 @@ const validateFAQPost = (values) => {
     errors.title = "FAQ title is required";
   } else if (values.title.trim().length === 0) {
     errors.title = "FAQ title can't contain empty space";
+  } else if (values.title.length < 10) {
+    errors.title = "FAQ title must contain atleast 10 characters.";
   } else {
     let userRegEx = /^[a-zA-Z\s.?a-zA-z]+\.?\??$/;
     if (!userRegEx.test(values?.title)) {
