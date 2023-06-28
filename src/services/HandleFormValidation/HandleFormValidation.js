@@ -33,7 +33,7 @@ const validateUserForm = (values) => {
 
     if (!passwordRegEx.test(values.password)) {
       errors.password =
-        "Password must contain atleast 6 characters, one uppercase, one lowercase, one special-character and one number ";
+        "Password must contain atleast 8 characters, one uppercase, one lowercase, one special-character and one number ";
     }
   }
 
