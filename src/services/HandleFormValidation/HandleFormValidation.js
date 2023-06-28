@@ -29,7 +29,7 @@ const validateUserForm = (values) => {
   if (values.password.trim().length === 0) {
     errors.password = "Password can't contain empty space";
   } else {
-    let passwordRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
+    let passwordRegEx = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
 
     if (!passwordRegEx.test(values.password)) {
       errors.password =

@@ -139,10 +139,10 @@ const SignIn = () => {
         </button>
 
         <p className="w-full text-white flex justify-center items-center gap-1">
-          Dont Have an account?
+          {`Don't Have an account?`}
           <Link
             to="/signup"
-            className="underline underline-offset-2 decoration-1 italic hover:no-underline">
+            className="underline underline-offset-2 decoration-1 italic hover:no-underline text-red-300">
             Sign Up
           </Link>
         </p>
