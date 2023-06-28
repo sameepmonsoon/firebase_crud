@@ -50,7 +50,7 @@ const SignUp = () => {
     }
     if (
       allDocs.docs.length === 0 &&
-      Object.keys(formErrors).length <= 0 &&
+      Object.keys(validateUserForm(formValues))?.length === 0 &&
       formValues?.username.trim().length > 0 &&
       formValues?.password.trim().length > 0
     ) {
@@ -88,7 +88,7 @@ const SignUp = () => {
         .finally(() => setIsLoading(false));
     }
 
-    if (Object.keys(formErrors).length >= 0) {
+    if (Object.keys(validateUserForm(formValues))?.length >= 0) {
       setIsLoading(false);
     }
   };
