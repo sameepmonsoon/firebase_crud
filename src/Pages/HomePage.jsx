@@ -4,7 +4,7 @@ import HomeLayout from "../Layout/HomeLayout";
 import { FiEdit } from "react-icons/fi";
 import { IoAdd, IoLogOutOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
-import FAQModal from "../Component/FAQModal";
+import FAQModal from "../Component/FAQModal/FAQModal";
 import { AuthContext } from "../Context/UserAuthContext";
 import { useContext } from "react";
 import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
@@ -13,13 +13,18 @@ import {
   toastMessageError,
   toastMessageSuccess,
 } from "../services/ToastMessage/ToastMessage";
+import DeleteModal from "../Component/Delete Modal/DeleteModal";
+import ReactQuill from "react-quill";
 const HomePage = () => {
-  const { isAdminRole, logOut, isLoading } = useContext(AuthContext);
+  const { isAdminRole, logOut } = useContext(AuthContext);
   const [openModal, setOpenModal] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [currentData, setCurrentData] = useState([]);
   const [selctedIndex, setSelectedIndex] = useState(null);
   const [editData, setEditData] = useState(null);
+  const [deleteFaqId, setDeleteFaqId] = useState(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState([]);
   const handleModalToggle = () => {
     setOpenModal(!openModal);
   };
@@ -31,24 +36,43 @@ const HomePage = () => {
       setSelectedIndex(index);
     }
   };
-
+  //function to set the delete id
   const handleDelete = async (id) => {
     setIsButtonDisabled(true);
-    const deleteDocument = doc(firestoreDb, "post", id);
-    await deleteDoc(deleteDocument)
-      .then(() => {
-        toastMessageSuccess("FAQ Deleted.");
-      })
-      .catch(() => {
-        toastMessageError("Error deleting FAQ.");
-      })
-      .finally(() => {
-        setIsButtonDisabled(false);
-      });
-
-    fetchFAQ();
+    setOpenDeleteModal(!openDeleteModal);
+    setDeleteFaqId(id);
   };
 
+  //function that deletes the faq
+  const deleteFAQ = async () => {
+    setIsButtonDisabled(true);
+    if (deleteFaqId) {
+      const deleteDocument = doc(firestoreDb, "post", deleteFaqId);
+      await deleteDoc(deleteDocument)
+        .then(() => {
+          toastMessageSuccess("FAQ Deleted.");
+        })
+        .catch(() => {
+          toastMessageError("Error deleting FAQ.");
+        })
+        .finally(() => {
+          setIsButtonDisabled(false);
+
+          toggleDeleteModal();
+        });
+
+      fetchFAQ();
+    }
+  };
+  const toggleDeleteModal = () => {
+    setOpenDeleteModal(!openDeleteModal);
+    if (openDeleteModal) {
+      setIsButtonDisabled(false);
+    }
+    if (!openDeleteModal) {
+      setIsButtonDisabled(true);
+    }
+  };
   const handleEdit = async (id, index, data) => {
     setEditData({
       ...editData,
@@ -65,28 +89,67 @@ const HomePage = () => {
     handleModalToggle();
   };
 
+  const handleFAQContentClick = (data) => {
+    const parser = new DOMParser();
+    const documentData = parser.parseFromString(data?.body, "text/html");
+    console.log(documentData.getElementsByTagName("img")[0].src);
+    if (documentData.querySelector("img") != null) {
+      const imageData = documentData.getElementsByTagName("img");
+      for (let i = 0; i <= imageData.length; i++) {
+        setPreviewImageUrl([imageData[i]?.src]);
+      }
+
+      document?.getElementById("imagePreview")?.requestFullscreen();
+    }
+  };
+
+  const removePreviewImage = () => {
+    const element = document.getElementById("imagePreview");
+    element?.remove();
+    setPreviewImageUrl("");
+  };
+
   async function fetchFAQ() {
     const allFAQData = await getDocs(collection(firestoreDb, "post"));
     const data = allFAQData?.docs?.map((doc) => doc);
-    console.log(data);
     setCurrentData(data);
   }
   useEffect(() => {
     fetchFAQ();
   }, [openModal]);
-  console.log(isAdminRole);
-  console.log(isLoading);
+  console.log(previewImageUrl);
   return (
     <HomeLayout>
-      <div className="w-[60%] h-[45rem] bg-blue-800 flex justify-start items-start relative top-0 flex-col gap-[1.5rem] p-2 m-1 rounded-[3px] overflow-y-auto overflow-x-hidden">
-        <p className="md:min-h-[3rem]  min-h-[4rem] relative w-full flex flex-col  md:flex-row justify-start md:justify-center gap-2 md:gap-10  items-start md:items-center text-md sm:text-xl md:text-3xl font-[500] text-white">
-          Frequently Asked Question
+      {previewImageUrl.length > 0 && (
+        <div
+          className="fixed w-full h-full z-[200] bg-gray-100/50 backdrop-blur-sm flex justify-center items-center"
+          onClick={removePreviewImage}>
+          {previewImageUrl.map((item, index) => (
+            <img
+              key={index}
+              src={item}
+              id="imagePreview"
+              className="w-[50%] h-[60%] z-[200]"
+            />
+          ))}
+          <span
+            onClick={removePreviewImage}
+            className="h-10 w-40 cursor-pointer bg-black rounded-full text-white flex justify-center items-center absolute top-10">
+            Click To Exit
+          </span>
+        </div>
+      )}
+      <div
+        id="home"
+        className="w-[60%] h-[45rem] bg-white text-black border-[1px] shadow-md flex justify-start items-start relative top-0 flex-col gap-[0.8rem] p-2 m-1 rounded-[3px] overflow-y-auto overflow-x-hidden">
+        <p className="md:min-h-[3rem] bg-blue-600 p-2 md:p-1 min-h-[5.5rem] relative w-full flex flex-col  md:flex-row justify-start md:justify-center gap-2 md:gap-10  items-start md:items-center text-md sm:text-xl font-[500] text-white">
+          Frequently Asked Questions
           {isAdminRole && (
             <span
               onClick={handeAddNewFAQ}
-              className="sm:w-[8rem] h-[1.8rem] sm:h-[3rem] flex justify-start items-center  text-sm sm:text-[1.1rem] lg:text-lg border-[2px] rounded-md p-1 cursor-pointer hover:text-white text-gray-100/90 hover:border-white border-gray-100/90">
-              <IoAdd size={30} className="group-hover:text-blue-800" />
-              New FAQ
+              className="sm:w-[7rem] h-[1.8rem] sm:h-[2.2rem] flex justify-start items-center text-sm sm:text-[1rem] lg:text-md border-[1px] rounded-md p-1 cursor-pointer hover:text-white text-gray-100/90 hover:border-white border-gray-100/90">
+              <IoAdd size={25} className="group-hover:text-blue-800" />
+              Add FAQ
             </span>
           )}
         </p>
@@ -95,6 +158,13 @@ const HomePage = () => {
           modalState={openModal}
           editDocData={editData}
         />
+
+        <DeleteModal
+          deleteModalState={openDeleteModal}
+          closeDeleteModalFunction={toggleDeleteModal}
+          deleteFAQ={deleteFAQ}
+          isLoading={!isButtonDisabled}
+        />
         {/* accordion */}
         {currentData?.map((data, index) => {
           const postId = data.id;
@@ -102,20 +172,21 @@ const HomePage = () => {
           return (
             <div
               key={index}
-              className=" h-auto bg-white w-full flex flex-col justify-around items-center rounded-sm ">
-              <div className="w-full flex justify-around h-40 md:h-20 items-center md:flex-row flex-col p-1">
-                <div className="order-1 w-full md:w-auto md:flex-1  flex justify-start px-2 items-center h-full text-[16px]  sm:text-[18px] overflow-hidden ">
+              className=" h-auto bg-white border-[1px] border-blue-200 w-full flex flex-col justify-around items-center rounded-md ">
+              <div className="w-full flex justify-around h-40  md:h-[2.8rem] items-center md:flex-row flex-col p-1">
+                <div className="order-1 w-full md:w-auto md:flex-1  flex justify-start px-2 items-center h-full text-[16px]  sm:text-[16px] overflow-hidden ">
                   {currentPostData?.title}
                 </div>
-                <div className="order-2 w-auto h-40 md:h-20 flex justify-start items-center gap-2 flex-wrap">
+
+                <div className="order-2 w-auto h-40 md:h-[2.5rem] flex justify-start items-center gap-2 flex-wrap">
                   {isAdminRole && (
                     <span
                       onClick={() => {
                         handleEdit(postId, index, currentPostData);
                       }}
-                      className="  text-emerald-600 sm:w-[4rem] sm:h-[80%] flex justify-center items-center cursor-pointer group border-2 rounded-md border-emerald-400">
+                      className="  text-emerald-600 sm:w-[2rem] sm:h-[80%] flex justify-center items-center cursor-pointer group border-[0px] rounded-md border-emerald-400">
                       <FiEdit
-                        size={30}
+                        size={25}
                         className="group-hover:text-green-800"
                       />
                     </span>
@@ -124,41 +195,46 @@ const HomePage = () => {
                     <button
                       disabled={isButtonDisabled}
                       onClick={() => handleDelete(postId)}
-                      className={` text-red-600 sm:w-[4rem] sm:h-[80%] flex justify-center items-center ${
+                      className={` text-red-600 sm:w-[2rem] sm:h-[80%] flex justify-center items-center ${
                         isButtonDisabled
                           ? "cursor-not-allowed"
                           : "cursor-pointer"
-                      } group border-2 rounded-md border-red-700`}>
+                      } group border-[0px] rounded-md border-red-700`}>
                       <MdDeleteOutline
-                        size={30}
+                        size={25}
                         className="group-hover:text-red-800 text-red-600"
                       />
                     </button>
                   )}
                   <span
-                    className="  text-blue-900 sm:w-[4rem] w-[2.1rem] h-[43%] sm:h-[80%] flex justify-center items-center cursor-pointer group border-2 rounded-md border-blue-800"
+                    className="  text-blue-900 sm:w-[2rem] w-[1.8rem] h-[38%] sm:h-[80%] flex justify-center items-center cursor-pointer group border-[0px] rounded-md border-blue-800"
                     onClick={() => handleAccordionToggle(index)}>
                     {selctedIndex === index ? (
                       <AiOutlineMinus
-                        size={35}
+                        size={25}
                         className="group-hover:text-blue-800 "
                       />
                     ) : (
-                      <MdAdd size={38} className="group-hover:text-blue-800" />
+                      <MdAdd size={25} className="group-hover:text-blue-800" />
                     )}
                   </span>
                 </div>
               </div>
               {selctedIndex === index && (
-                <div className="w-full  min-h-[4rem] text-gray-600 p-1 py-2 flex justify-start items-center flex-wrap text-[14px] sm:text-[17px] flex-col border-t-[2px] border-blue-800">
-                  {currentPostData?.image && (
-                    <img
-                      src={currentPostData?.image}
-                      alt=""
-                      className="w-[14rem] h-[14rem]"
+                <div className="w-full min-h-[4rem] text-gray-600 p-1 py-2 flex justify-start items-center flex-wrap text-[14px] sm:text-[17px] flex-col border-t-[1px] border-blue-200">
+                  <div
+                    className="w-full z-1"
+                    onClick={() => {
+                      handleFAQContentClick(currentPostData);
+                    }}>
+                    <ReactQuill
+                      value={currentPostData?.body}
+                      readOnly={true}
+                      theme={"bubble"}
+                      style={{ fontSize: "18px" }}
+                      className="z-1"
                     />
-                  )}
-                  {currentPostData?.body}
+                  </div>
                 </div>
               )}
             </div>
@@ -168,8 +244,8 @@ const HomePage = () => {
 
       <div
         onClick={() => logOut()}
-        className="absolute bottom-2 cursor-pointer right-5 bg-red-900 w-[8rem] h-[2.8rem] rounded-md flex justify-evenly items-center text-white text-xl uppercase font-[500]">
-        <IoLogOutOutline size={35} /> Logout
+        className="absolute bottom-2 cursor-pointer right-5 bg-red-900 w-[8rem] h-[2.5rem] rounded-md flex justify-evenly items-center text-white text-lg capitalize font-[400]">
+        <IoLogOutOutline size={25} /> Logout
       </div>
     </HomeLayout>
   );

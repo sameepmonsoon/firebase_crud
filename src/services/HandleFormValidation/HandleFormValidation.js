@@ -67,15 +67,27 @@ const validateFAQPost = (values) => {
     }
   }
 
-  if (!values?.body) {
-    errors.body = "FAQ content is required";
-  } else if (values?.body?.trim().length === 0) {
-    errors.body = "FAQ content can't contain empty space";
-  } else if (values?.body?.trim().length < 20) {
-    errors.body = "FAQ content must contain atleast 20 characters.";
-  }
+  // if (!isQuillEmpty(values?.body)) {
+  //   errors.body = "FAQ content is required";
+  // }
+  // else if (values?.body?.trim().length === 0) {
+  //   errors.body = "FAQ content can't contain empty space";
+  // } else if (values?.body?.trim().length < 20) {
+  //   errors.body = "FAQ content must contain atleast 20 characters.";
+  // }
 
   return errors;
 };
 
-export { validateUserForm, validateFAQPost };
+// function to check if the react quill value is empty
+function isQuillEmpty(value) {
+  if (
+    value.replace(/<(.|\n)*?>/g, "").trim().length === 0 &&
+    !value.includes("<img")
+  ) {
+    return true;
+  }
+  return false;
+}
+
+export { validateUserForm, validateFAQPost, isQuillEmpty };
