@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { PiSpinnerBold } from "react-icons/pi";
 import { RxCross1 } from "react-icons/rx";
 import ReactQuill from "react-quill";
@@ -14,6 +14,7 @@ import {
   toastMessageError,
   toastMessageSuccess,
 } from "../../services/ToastMessage/ToastMessage";
+import { ReactQuillCompressor } from "../../services/ReactQuillCompressor/ReactQuillCompressor";
 
 const FAQModal = ({ modalState, toggleModal, editDocData }) => {
   const { currentUser } = useContext(AuthContext);
@@ -21,8 +22,8 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
   const [formErrors, setFormErrors] = useState({});
   const [postData, setPostData] = useState({});
   const [editorContent, setEditorContent] = useState("");
-
-    //handle form value change
+  const inputRef = useRef();
+  //handle form value change
   const handleChange = (e) => {
     const { value, name } = e.target;
     setPostData({ ...postData, [name]: value });
@@ -59,9 +60,10 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
       setIsLoading(false);
     }
 
+    const updatedContent = await ReactQuillCompressor(editorContent);
     const submittedData = {
       title: postData?.title,
-      body: editorContent,
+      body: updatedContent,
       userId: currentUser?.uid,
     };
 
@@ -91,6 +93,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
   };
 
   const handleToggleModal = () => {
+    setEditorContent("");
     toggleModal();
   };
 
@@ -107,6 +110,17 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
     setEditorContent(editDocData?.body);
   }, [editDocData]);
 
+  useEffect(() => {
+    if (formErrors?.title) {
+      inputRef.current.scrollIntoView({ behavior: "smooth", top: "0" });
+    }
+  }, [formErrors]);
+
+  useEffect(() => {
+    if (Object.keys(formErrors).length > 0) {
+      setIsLoading(false);
+    }
+  }, [formErrors]);
   return (
     <div
       className={`fixed  w-full overflow-auto z-[100] h-full  backdrop-blur-sm top-0 z-1 right-0 justify-center items-center ${
@@ -114,7 +128,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
       }`}>
       <div
         onClick={handleToggleModal}
-        className={`fixed w-full z-1 h-full bg-gray-100/10 backdrop-blur-sm top-0 z-1 right-0 justify-center items-center ${
+        className={`fixed w-full z-1 h-full bg-black/20 backdrop-blur-sm top-0 z-1 right-0 justify-center items-center ${
           modalState === false ? "hidden" : "flex"
         }`}></div>
 
@@ -123,14 +137,14 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
           id="form"
           onSubmit={handleSubmit}
           className="z-[22] w-[36rem] overflow-y-auto overflow-x-hidden h-[38rem] flex flex-col justify-start items-center p-2 bg-white rounded-md gap-[2rem] py-5 border-[1px] text-blue-600 border-gray-300">
-          <p className="relative min-h-[2.5rem] w-full border-b-[1px]  border-blue-400 text-blue-600 flex justify-center items-center text-xl font-[400] ">
+          <div className="relative min-h-[2.5rem] w-full border-b-[1px]  border-blue-400 text-blue-600 flex justify-center items-center text-xl font-[400] ">
             Create FAQ
             <span
               onClick={handleToggleModal}
               className="absolute right-1  hover:bg-red-100/30 rounded-full z-10 w-10 h-full text-red-600 flex justify-center items-center cursor-pointer hover:text-red-900">
               <RxCross1 size={25} />
             </span>
-          </p>
+          </div>
 
           <div className="w-[90%] h-auto flex flex-col justify-start items-center gap-10">
             <label
@@ -140,6 +154,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
                 * FAQ Title
               </span>
               <input
+                ref={inputRef}
                 type="text"
                 name="title"
                 id="title"
@@ -173,6 +188,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
                     ["bold", "italic", "underline", "strike"],
                     [{ list: "ordered" }, { list: "bullet" }],
                     ["link", "image"],
+                    [{ direction: "ltr" }],
                   ],
                   clipboard: {
                     matchVisual: false,
@@ -191,15 +207,15 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
             <button
               disabled={isLoading}
               type="submit"
-              className="w-[89%] capitalize bg-blue-700 flex justify-center  items-center h-[2.5rem] p-0 rounded-md text-md font-[500] text-white border-[1px] border-blue-200 hover:bg-blue-500 hover:border-blue-300">
+              className="w-[90%] capitalize bg-blue-700 flex justify-center  items-center h-[2.5rem] p-0 rounded-[0.2rem] text-md font-[400] text-white border-[1px] border-blue-200 hover:bg-blue-500 hover:border-blue-300">
               {isLoading ? (
                 <span className="w-full flex justify-center items-center gap-2 animate-pulse">
                   <PiSpinnerBold size={30} className="animate-spin " />{" "}
-                  {editDocData ? "Updating" : "uploading"}
+                  {editDocData ? "Updating FAQ" : "uploading FAQ"}
                 </span>
               ) : (
                 <span className="w-full flex justify-center items-center gap-2">
-                  {editDocData ? "Update" : "upload"}
+                  {editDocData ? "Update FAQ" : "upload FAQ"}
                 </span>
               )}
             </button>

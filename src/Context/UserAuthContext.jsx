@@ -17,19 +17,16 @@ const UserAuthContextProvider = ({ children }) => {
   const [isAdminRole, setIsAdminRole] = useState(false);
 
   // firebase signup Function
-
   function signUp(email, password) {
     return createUserWithEmailAndPassword(firestoreAuth, email, password);
   }
 
   // firebase signup function
-
   function login(email, password) {
     return signInWithEmailAndPassword(firestoreAuth, email, password);
   }
 
   //firebase logout function
-
   function logOut() {
     localStorage.removeItem("currentUser");
     return signOut(firestoreAuth);

@@ -89,20 +89,16 @@ const HomePage = () => {
     handleModalToggle();
   };
 
-  const handleFAQContentClick = (data) => {
-    const parser = new DOMParser();
-    const documentData = parser.parseFromString(data?.body, "text/html");
-    console.log(documentData.getElementsByTagName("img")[0].src);
-    if (documentData.querySelector("img") != null) {
-      const imageData = documentData.getElementsByTagName("img");
-      for (let i = 0; i <= imageData.length; i++) {
-        setPreviewImageUrl([imageData[i]?.src]);
-      }
-
+  //handles image preview when clicked react-quill body/faq
+  const handleFAQContentClick = (event) => {
+    const clickedElement = event.target;
+    if (clickedElement.tagName === "IMG") {
+      setPreviewImageUrl([clickedElement.src]);
       document?.getElementById("imagePreview")?.requestFullscreen();
     }
   };
 
+  //remove image preview
   const removePreviewImage = () => {
     const element = document.getElementById("imagePreview");
     element?.remove();
@@ -117,42 +113,46 @@ const HomePage = () => {
   useEffect(() => {
     fetchFAQ();
   }, [openModal]);
-  console.log(previewImageUrl);
+
   return (
     <HomeLayout>
       {previewImageUrl.length > 0 && (
         <div
-          className="fixed w-full h-full z-[200] bg-gray-100/50 backdrop-blur-sm flex justify-center items-center"
+          className="fixed w-full h-full z-[200] bg-black/40 backdrop-blur-sm flex justify-center items-center"
           onClick={removePreviewImage}>
           {previewImageUrl.map((item, index) => (
             <img
               key={index}
               src={item}
               id="imagePreview"
-              className="w-[50%] h-[60%] z-[200]"
+              className="w-[50%] h-[60%] z-[200] object-contain"
             />
           ))}
           <span
             onClick={removePreviewImage}
-            className="h-10 w-40 cursor-pointer bg-black rounded-full text-white flex justify-center items-center absolute top-10">
-            Click To Exit
+            className="h-10 w-[12rem] cursor-pointer bg-black rounded-full text-white flex justify-center items-center absolute top-10">
+            Click Anywhere To Exit
           </span>
         </div>
       )}
       <div
         id="home"
-        className="w-[60%] h-[45rem] bg-white text-black border-[1px] shadow-md flex justify-start items-start relative top-0 flex-col gap-[0.8rem] p-2 m-1 rounded-[3px] overflow-y-auto overflow-x-hidden">
-        <p className="md:min-h-[3rem] bg-blue-600 p-2 md:p-1 min-h-[5.5rem] relative w-full flex flex-col  md:flex-row justify-start md:justify-center gap-2 md:gap-10  items-start md:items-center text-md sm:text-xl font-[500] text-white">
+        className="w-[60%] h-[45rem] bg-white text-black border-[1px] shadow-lg flex justify-start items-start relative top-0 flex-col gap-[0.8rem] p-2 m-1 rounded-[3px] overflow-y-auto overflow-x-hidden">
+        <div className="md:min-h-[3rem] bg-blue-600 p-2 md:p-1 min-h-[5.5rem] relative w-full flex flex-col  md:flex-row justify-start md:justify-center gap-2 md:gap-10  items-start md:items-center text-md sm:text-xl font-[500] text-white">
           Frequently Asked Questions
           {isAdminRole && (
-            <span
+            <div
               onClick={handeAddNewFAQ}
-              className="sm:w-[7rem] h-[1.8rem] sm:h-[2.2rem] flex justify-start items-center text-sm sm:text-[1rem] lg:text-md border-[1px] rounded-md p-1 cursor-pointer hover:text-white text-gray-100/90 hover:border-white border-gray-100/90">
-              <IoAdd size={25} className="group-hover:text-blue-800" />
-              Add FAQ
-            </span>
+              className="sm:w-[7rem] h-[1.8rem] font-[400] hover:bg-blue-700 gap-0 sm:h-[2.2rem] flex justify-start items-center text-sm sm:text-[1rem] lg:text-md border-[1px] rounded-[0.2rem] cursor-pointer text-white  hover:border-white border-gray-100/90">
+              <span className="h-full w-[70%] flex justify-center items-center">
+                Add FAQ
+              </span>
+              <span className="w-[2rem]  h-full flex justify-center items-center rounded-r-sm ">
+                <IoAdd size={25} className="group-hover:text-blue-800" />
+              </span>
+            </div>
           )}
-        </p>
+        </div>
         <FAQModal
           toggleModal={handleModalToggle}
           modalState={openModal}
@@ -172,9 +172,16 @@ const HomePage = () => {
           return (
             <div
               key={index}
-              className=" h-auto bg-white border-[1px] border-blue-200 w-full flex flex-col justify-around items-center rounded-md ">
-              <div className="w-full flex justify-around h-40  md:h-[2.8rem] items-center md:flex-row flex-col p-1">
-                <div className="order-1 w-full md:w-auto md:flex-1  flex justify-start px-2 items-center h-full text-[16px]  sm:text-[16px] overflow-hidden ">
+              className={`h-auto bg-white border-[1px] ${
+                selctedIndex === index &&
+                "border-blue-400 outline outline-2 outline-offset-1 outline-blue-200 shadow-sm shadow-black/30"
+              } border-blue-200 w-full flex flex-col justify-around items-center rounded-md `}>
+              <div
+                className={`w-full flex justify-around h-40  md:h-[2.8rem] items-center md:flex-row flex-col p-1  ${
+                  selctedIndex === index && "bg-blue-100 rounded-t-md"
+                }`}>
+                <div
+                  className={`order-1 w-full md:w-auto md:flex-1 flex-wrap  flex justify-start px-2 items-center h-full text-[16px]  sm:text-[16px] overflow-hidden `}>
                   {currentPostData?.title}
                 </div>
 
@@ -224,15 +231,16 @@ const HomePage = () => {
                 <div className="w-full min-h-[4rem] text-gray-600 p-1 py-2 flex justify-start items-center flex-wrap text-[14px] sm:text-[17px] flex-col border-t-[1px] border-blue-200">
                   <div
                     className="w-full z-1"
-                    onClick={() => {
-                      handleFAQContentClick(currentPostData);
+                    onClick={(e) => {
+                      handleFAQContentClick(e);
                     }}>
                     <ReactQuill
                       value={currentPostData?.body}
                       readOnly={true}
-                      theme={"bubble"}
-                      style={{ fontSize: "18px" }}
-                      className="z-1"
+                      theme={"snow"}
+                      modules={{
+                        toolbar: null,
+                      }}
                     />
                   </div>
                 </div>
@@ -242,11 +250,14 @@ const HomePage = () => {
         })}
       </div>
 
-      <div
+      <button
         onClick={() => logOut()}
-        className="absolute bottom-2 cursor-pointer right-5 bg-red-900 w-[8rem] h-[2.5rem] rounded-md flex justify-evenly items-center text-white text-lg capitalize font-[400]">
-        <IoLogOutOutline size={25} /> Logout
-      </div>
+        className=" absolute bottom-3 w-[8rem] rounded-sm right-5 bg-red-700 text-white h-[2.4rem] flex justify-center items-center">
+        <span className="flex-1 text-lg">Logout</span>
+        <span className="w-10 bg-red-800 h-full justify-center items-center flex rounded-r-sm">
+          <IoLogOutOutline size={25} />
+        </span>
+      </button>
     </HomeLayout>
   );
 };

@@ -26,17 +26,15 @@ const validateUserForm = (values) => {
   if (!values.password) {
     errors.password = "Password is required.";
   }
-  if (values.password.trim().length === 0) {
+  if (values?.password?.trim().length === 0) {
     errors.password = "Password can't contain empty space";
   } else {
-    let passwordRegEx = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
-
-    if (!passwordRegEx.test(values.password)) {
+    let passwordRegEx = /^(?=.{2,}\d)(?=.{2,}[a-zA-Z])(?=.*[\W]).{6,}$/;
+    if (!passwordRegEx.test(values?.password)) {
       errors.password =
         "Password must contain atleast 6 characters, one uppercase, one lowercase, one special-character and one number ";
     }
   }
-
   if (!values.roles) {
     errors.roles = "Roles Cannot be empty.";
   } else {
@@ -46,7 +44,7 @@ const validateUserForm = (values) => {
       errors.roles = "Roles must be string ";
     }
   }
-
+  console.log(errors);
   return errors;
 };
 

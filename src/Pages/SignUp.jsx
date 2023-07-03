@@ -33,11 +33,11 @@ const SignUp = () => {
     const { value, name } = e.target;
     setFormValues({ ...formValues, [name]: value });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setFormErrors(validateUserForm(formValues));
-
     if (
       Object.keys(validateUserForm(formValues))?.length === 0 &&
       formValues?.username?.trim().length > 0 &&
@@ -52,7 +52,6 @@ const SignUp = () => {
       if (allDocs.docs.length != 0) {
         toastMessageError("Username already in use.");
         setFormErrors({
-          ...formErrors,
           ["username"]: "Username already in use.",
         });
       } else {
@@ -69,7 +68,7 @@ const SignUp = () => {
               })
                 .then((res) => console.log(res))
                 .catch((err) => {
-                  console.log("inside innner then", err.code);
+                  console.log(err.code);
                 });
 
               console.log(userId);
@@ -77,7 +76,6 @@ const SignUp = () => {
             navigate("/");
           })
           .catch((err) => {
-            console.log(err.code);
             if (err.code === "auth/email-already-in-use") {
               toastMessageError("Email already in use.");
             }
@@ -188,7 +186,7 @@ const SignUp = () => {
             <option value="user">User</option>
           </select>
           {formErrors.roles && (
-            <span className="w-[95%] px-[2px] h-auto text-red-600">
+            <span className="w-[95%] px-[2px] h-auto text-rose-4000">
               {formErrors.roles}
             </span>
           )}
@@ -207,14 +205,14 @@ const SignUp = () => {
           )}
         </button>
 
-        <p className="w-full flex justify-center items-center gap-1 text-gray-700">
+        <div className="w-full flex justify-center items-center gap-1 text-gray-700 flex-wrap">
           Already Have an account?{" "}
           <Link
             to="/signin"
             className="underline underline-offset-2 decoration-1 italic hover:no-underline text-blue-500">
             Sign In
           </Link>
-        </p>
+        </div>
       </form>
     </HomeLayout>
   );

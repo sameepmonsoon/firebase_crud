@@ -138,14 +138,14 @@ const SignIn = () => {
           )}
         </button>
 
-        <p className="w-full  text-gray-700 flex justify-center items-center gap-1">
+        <div className="w-full  text-gray-700 flex justify-center items-center gap-1 flex-wrap">
           {`Don't Have an account?`}
           <Link
             to="/signup"
             className="underline underline-offset-2 decoration-1 italic hover:no-underline text-blue-500">
             Sign Up
           </Link>
-        </p>
+        </div>
       </form>
     </HomeLayout>
   );
