@@ -15,6 +15,8 @@ import {
 } from "../services/ToastMessage/ToastMessage";
 import DeleteModal from "../Component/Delete Modal/DeleteModal";
 import ReactQuill from "react-quill";
+import { useQuery } from "@tanstack/react-query";
+import { FaqLoadingSkeleton } from "../Component/FAQ_loading_skeleton/FaqLoadingSkeleton";
 const HomePage = () => {
   const { isAdminRole, logOut } = useContext(AuthContext);
   const [openModal, setOpenModal] = useState(false);
@@ -61,7 +63,7 @@ const HomePage = () => {
           toggleDeleteModal();
         });
 
-      fetchFAQ();
+      // fetchFAQ();
     }
   };
   const toggleDeleteModal = () => {
@@ -105,14 +107,27 @@ const HomePage = () => {
     setPreviewImageUrl("");
   };
 
-  async function fetchFAQ() {
-    const allFAQData = await getDocs(collection(firestoreDb, "post"));
-    const data = allFAQData?.docs?.map((doc) => doc);
-    setCurrentData(data);
-  }
-  useEffect(() => {
-    fetchFAQ();
-  }, [openModal]);
+  const { data, isFetching } = useQuery({
+    queryKey: ["faq"],
+    queryFn: async () => {
+      const allFAQData = await getDocs(collection(firestoreDb, "post"));
+      const data = allFAQData?.docs?.map((doc) => doc);
+      setCurrentData(data);
+      return data;
+    },
+  });
+
+  // async function fetchFAQ() {
+  //   const allFAQData = await getDocs(collection(firestoreDb, "post"));
+  //   const data = allFAQData?.docs?.map((doc) => doc);
+  //   console.log(data);
+  //   setCurrentData(data);
+  //   return data;
+  // }
+  // useEffect(() => {
+  //   fetchFAQ();
+  // }, [openModal]);
+  console.log(data, currentData, isFetching);
 
   return (
     <HomeLayout>
@@ -137,7 +152,7 @@ const HomePage = () => {
       )}
       <div
         id="home"
-        className="w-[60%] h-[45rem] bg-white text-black border-[1px] shadow-lg flex justify-start items-start relative top-0 flex-col gap-[0.8rem] p-2 m-1 rounded-[3px] overflow-y-auto overflow-x-hidden">
+        className="w-[90%] md:w-[60%] lg:w-[70%]  min-h-[17rem] max-h-[45rem] bg-white text-black border-[1px] shadow-lg flex justify-start items-start absolute top-3 flex-col gap-[0.8rem] p-2 m-1 rounded-[3px] overflow-y-auto overflow-x-hidden">
         <div className="md:min-h-[3rem] bg-blue-600 p-2 md:p-1 min-h-[5.5rem] relative w-full flex flex-col  md:flex-row justify-start md:justify-center gap-2 md:gap-10  items-start md:items-center text-md sm:text-xl font-[500] text-white">
           Frequently Asked Questions
           {isAdminRole && (
@@ -166,88 +181,101 @@ const HomePage = () => {
           isLoading={!isButtonDisabled}
         />
         {/* accordion */}
-        {currentData?.map((data, index) => {
-          const postId = data.id;
-          const currentPostData = data.data();
-          return (
-            <div
-              key={index}
-              className={`h-auto bg-white border-[1px] ${
-                selctedIndex === index &&
-                "border-blue-400 outline outline-2 outline-offset-1 outline-blue-200 shadow-sm shadow-black/30"
-              } border-blue-200 w-full flex flex-col justify-around items-center rounded-md `}>
-              <div
-                className={`w-full flex justify-around h-40  md:h-[2.8rem] items-center md:flex-row flex-col p-1  ${
-                  selctedIndex === index && "bg-blue-100 rounded-t-md"
-                }`}>
+        {isFetching ? (
+          <div className="w-full h-full flex flex-col justify-start text-[44px] font-[500] items-start gap-4">
+            <FaqLoadingSkeleton />
+            <FaqLoadingSkeleton />
+            <FaqLoadingSkeleton />
+          </div>
+        ) : (
+          <>
+            {currentData?.map((data, index) => {
+              const postId = data.id;
+              const currentPostData = data.data();
+              return (
                 <div
-                  className={`order-1 w-full md:w-auto md:flex-1 flex-wrap  flex justify-start px-2 items-center h-full text-[16px]  sm:text-[16px] overflow-hidden `}>
-                  {currentPostData?.title}
-                </div>
-
-                <div className="order-2 w-auto h-40 md:h-[2.5rem] flex justify-start items-center gap-2 flex-wrap">
-                  {isAdminRole && (
-                    <span
-                      onClick={() => {
-                        handleEdit(postId, index, currentPostData);
-                      }}
-                      className="  text-emerald-600 sm:w-[2rem] sm:h-[80%] flex justify-center items-center cursor-pointer group border-[0px] rounded-md border-emerald-400">
-                      <FiEdit
-                        size={25}
-                        className="group-hover:text-green-800"
-                      />
-                    </span>
-                  )}
-                  {isAdminRole && (
-                    <button
-                      disabled={isButtonDisabled}
-                      onClick={() => handleDelete(postId)}
-                      className={` text-red-600 sm:w-[2rem] sm:h-[80%] flex justify-center items-center ${
-                        isButtonDisabled
-                          ? "cursor-not-allowed"
-                          : "cursor-pointer"
-                      } group border-[0px] rounded-md border-red-700`}>
-                      <MdDeleteOutline
-                        size={25}
-                        className="group-hover:text-red-800 text-red-600"
-                      />
-                    </button>
-                  )}
-                  <span
-                    className="  text-blue-900 sm:w-[2rem] w-[1.8rem] h-[38%] sm:h-[80%] flex justify-center items-center cursor-pointer group border-[0px] rounded-md border-blue-800"
-                    onClick={() => handleAccordionToggle(index)}>
-                    {selctedIndex === index ? (
-                      <AiOutlineMinus
-                        size={25}
-                        className="group-hover:text-blue-800 "
-                      />
-                    ) : (
-                      <MdAdd size={25} className="group-hover:text-blue-800" />
-                    )}
-                  </span>
-                </div>
-              </div>
-              {selctedIndex === index && (
-                <div className="w-full min-h-[4rem] text-gray-600 p-1 py-2 flex justify-start items-center flex-wrap text-[14px] sm:text-[17px] flex-col border-t-[1px] border-blue-200">
+                  key={index}
+                  className={`h-auto bg-white border-[1px] ${
+                    selctedIndex === index &&
+                    "border-blue-400 outline outline-2 outline-offset-1 outline-blue-200 shadow-sm shadow-black/30"
+                  } border-blue-200 w-full flex flex-col justify-around items-center rounded-md `}>
                   <div
-                    className="w-full z-1"
-                    onClick={(e) => {
-                      handleFAQContentClick(e);
-                    }}>
-                    <ReactQuill
-                      value={currentPostData?.body}
-                      readOnly={true}
-                      theme={"snow"}
-                      modules={{
-                        toolbar: null,
-                      }}
-                    />
+                    className={`w-full flex justify-around h-40  md:h-[2.8rem] items-center md:flex-row flex-col p-1  ${
+                      selctedIndex === index && "bg-blue-100 rounded-t-md"
+                    }`}>
+                    <div
+                      className={`order-1 w-full md:w-auto md:flex-1 flex-wrap  flex justify-start px-2 items-center h-full text-[16px]  sm:text-[16px] overflow-hidden `}>
+                      {currentPostData?.title}
+                    </div>
+
+                    <div className="order-2 w-auto h-40 md:h-[2.5rem] flex justify-start items-center gap-2 flex-wrap">
+                      {isAdminRole && (
+                        <span
+                          onClick={() => {
+                            handleEdit(postId, index, currentPostData);
+                          }}
+                          className="  text-emerald-600 sm:w-[2rem] sm:h-[80%] flex justify-center items-center cursor-pointer group border-[0px] rounded-md border-emerald-400">
+                          <FiEdit
+                            size={25}
+                            className="group-hover:text-green-800"
+                          />
+                        </span>
+                      )}
+                      {isAdminRole && (
+                        <button
+                          disabled={isButtonDisabled}
+                          onClick={() => handleDelete(postId)}
+                          className={` text-red-600 sm:w-[2rem] sm:h-[80%] flex justify-center items-center ${
+                            isButtonDisabled
+                              ? "cursor-not-allowed"
+                              : "cursor-pointer"
+                          } group border-[0px] rounded-md border-red-700`}>
+                          <MdDeleteOutline
+                            size={25}
+                            className="group-hover:text-red-800 text-red-600"
+                          />
+                        </button>
+                      )}
+                      <span
+                        className="  text-blue-900 sm:w-[2rem] w-[1.8rem] h-[38%] sm:h-[80%] flex justify-center items-center cursor-pointer group border-[0px] rounded-md border-blue-800"
+                        onClick={() => handleAccordionToggle(index)}>
+                        {selctedIndex === index ? (
+                          <AiOutlineMinus
+                            size={25}
+                            className="group-hover:text-blue-800 "
+                          />
+                        ) : (
+                          <MdAdd
+                            size={25}
+                            className="group-hover:text-blue-800"
+                          />
+                        )}
+                      </span>
+                    </div>
                   </div>
+                  {selctedIndex === index && (
+                    <div className="w-full min-h-[4rem] text-gray-600 p-1 py-2 flex justify-start items-center flex-wrap text-[14px] sm:text-[17px] flex-col border-t-[1px] border-blue-200">
+                      <div
+                        className="w-full z-1"
+                        onClick={(e) => {
+                          handleFAQContentClick(e);
+                        }}>
+                        <ReactQuill
+                          value={currentPostData?.body}
+                          readOnly={true}
+                          theme={"snow"}
+                          modules={{
+                            toolbar: null,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          );
-        })}
+              );
+            })}
+          </>
+        )}
       </div>
 
       <button

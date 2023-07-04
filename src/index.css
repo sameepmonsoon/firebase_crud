@@ -21,6 +21,7 @@
 }
 
 body {
+  overflow: hidden;
   ::-webkit-scrollbar {
     width: 9px;
   }
