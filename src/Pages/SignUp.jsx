@@ -59,7 +59,7 @@ const SignUp = () => {
           .then(async (res) => {
             toastMessageSuccess("Welcome!");
             if (formValues.roles === "admin" || formValues.roles === "user") {
-              const userId = await addDoc(collection(firestoreDb, "users"), {
+              await addDoc(collection(firestoreDb, "users"), {
                 uid: res?.user?.uid,
                 username: formValues.username,
                 email: formValues.email,
@@ -70,8 +70,6 @@ const SignUp = () => {
                 .catch((err) => {
                   console.log(err.code);
                 });
-
-              console.log(userId);
             }
             navigate("/");
           })

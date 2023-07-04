@@ -44,7 +44,6 @@ const validateUserForm = (values) => {
       errors.roles = "Roles must be string ";
     }
   }
-  console.log(errors);
   return errors;
 };
 
