@@ -27,7 +27,7 @@ const DeleteModal = ({
               deleteFAQ();
             }}>
             <span className="flex-1 text-lg">Delete</span>
-            <span className="w-10 bg-red-700 h-full justify-center items-center flex rounded-r-md">
+            <span className="w-10 h-full justify-center items-center flex rounded-r-md">
               <MdDeleteOutline size={25} />
             </span>
           </button>
@@ -38,7 +38,7 @@ const DeleteModal = ({
             }}
             className="w-[8rem] rounded-sm bg-green-600 text-white h-[2.2rem] flex justify-center items-center">
             <span className="flex-1 text-lg">Cancel</span>
-            <span className="w-10 bg-green-700 h-full justify-center items-center flex rounded-r-sm">
+            <span className="w-10  h-full justify-center items-center flex rounded-r-sm">
               <RxCross1 size={23} />
             </span>
           </button>

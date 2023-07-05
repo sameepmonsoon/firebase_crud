@@ -15,7 +15,7 @@ import {
   toastMessageSuccess,
 } from "../../services/ToastMessage/ToastMessage";
 import { ReactQuillCompressor } from "../../services/ReactQuillCompressor/ReactQuillCompressor";
-
+import { queryClient } from "../../main";
 const FAQModal = ({ modalState, toggleModal, editDocData }) => {
   const { currentUser } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +39,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
           setEditorContent("");
           toggleModal();
           resolve();
+          queryClient.invalidateQueries({queryKey:['faq']});
         })
         .catch(() => {
           toastMessageError("Error updating FAQ.");
@@ -146,7 +147,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
             </span>
           </div>
 
-          <div className="w-[90%] h-auto flex flex-col justify-start items-center gap-10">
+          <div className="w-[90%] h-auto flex flex-col justify-start items-center gap-20 lg:gap-10">
             <label
               htmlFor="title"
               className="w-full flex justify-center items-center flex-col">

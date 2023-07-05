@@ -3,7 +3,7 @@ import { MdAdd, MdDeleteOutline } from "react-icons/md";
 import HomeLayout from "../Layout/HomeLayout";
 import { FiEdit } from "react-icons/fi";
 import { IoAdd, IoLogOutOutline } from "react-icons/io5";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import FAQModal from "../Component/FAQModal/FAQModal";
 import { AuthContext } from "../Context/UserAuthContext";
 import { useContext } from "react";
@@ -36,8 +36,6 @@ const HomePage = () => {
     queryFn: async () => {
       const allFAQData = await getDocs(collection(firestoreDb, "post"));
       const data = allFAQData?.docs?.map((doc) => doc);
-      console.log(data);
-      // setCurrentData(data);
       return data;
     },
     refetchOnWindowFocus: true,
@@ -50,6 +48,7 @@ const HomePage = () => {
       setSelectedIndex(index);
     }
   };
+
   //function to set the delete id
   const handleDelete = async (id) => {
     setIsButtonDisabled(true);
@@ -117,11 +116,6 @@ const HomePage = () => {
     setPreviewImageUrl("");
   };
 
-  //the new post is not updated if the useeffect is removed ,
-  useEffect(() => {
-    refetch();
-  }, [openModal]);
-
   return (
     <HomeLayout>
       {previewImageUrl.length > 0 && (
@@ -146,7 +140,7 @@ const HomePage = () => {
       <div
         id="home"
         className="w-[90%] md:w-[60%] lg:w-[70%]  min-h-[17rem] max-h-[45rem] bg-white text-black border-[1px] shadow-lg flex justify-start items-start absolute top-3 flex-col gap-[0.8rem] p-2 m-1 rounded-[3px] overflow-y-auto overflow-x-hidden">
-        <div className="md:min-h-[3rem] bg-blue-600 p-2 md:p-1 min-h-[5.5rem] relative w-full flex flex-col  md:flex-row justify-start md:justify-center gap-2 md:gap-10  items-start md:items-center text-md sm:text-xl font-[500] text-white">
+        <div className="md:min-h-[3rem] bg-blue-600 p-2 md:p-1 min-h-[5.5rem] relative w-full flex flex-col  md:flex-row justify-start md:justify-between gap-2 md:gap-10  items-start md:items-center text-md sm:text-xl font-[500] text-white">
           Frequently Asked Questions
           {isAdminRole && (
             <div
@@ -187,13 +181,14 @@ const HomePage = () => {
               const currentPostData = data.data();
               return (
                 <div
+                onClick={() => handleAccordionToggle(index)}
                   key={index}
-                  className={`h-auto bg-white border-[1px] ${
+                  className={`h-auto  cursor-pointer bg-white border-[1px] ${
                     selctedIndex === index &&
                     "border-blue-400 outline outline-2 outline-offset-1 outline-blue-200 shadow-sm shadow-black/30"
                   } border-blue-200 w-full flex flex-col justify-around items-center rounded-md `}>
                   <div
-                    className={`w-full flex justify-around h-40  md:h-[2.8rem] items-center md:flex-row flex-col p-1  ${
+                    className={`w-full hover:bg-blue-100 flex justify-around h-40  md:h-[2.8rem] items-center md:flex-row flex-col p-1  ${
                       selctedIndex === index && "bg-blue-100 rounded-t-md"
                     }`}>
                     <div
@@ -201,7 +196,7 @@ const HomePage = () => {
                       {currentPostData?.title}
                     </div>
 
-                    <div className="order-2 w-auto h-40 md:h-[2.5rem] flex justify-start items-center gap-2 flex-wrap">
+                    <div className="order-2 w-auto h-40 md:h-[2.5rem] flex justify-start items-center gap-2 flex-wrap" >
                       {isAdminRole && (
                         <span
                           onClick={() => {
@@ -275,7 +270,7 @@ const HomePage = () => {
         onClick={() => logOut()}
         className=" absolute bottom-3 w-[8rem] rounded-sm right-5 bg-red-700 text-white h-[2.4rem] flex justify-center items-center">
         <span className="flex-1 text-lg">Logout</span>
-        <span className="w-10 bg-red-800 h-full justify-center items-center flex rounded-r-sm">
+        <span className="w-10  h-full justify-center items-center flex rounded-r-sm">
           <IoLogOutOutline size={25} />
         </span>
       </button>
