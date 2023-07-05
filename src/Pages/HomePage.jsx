@@ -22,7 +22,7 @@ const HomePage = () => {
   const [openModal, setOpenModal] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [currentData, setCurrentData] = useState([]);
+  // const [currentData, setCurrentData] = useState([]);
   const [selctedIndex, setSelectedIndex] = useState(null);
   const [editData, setEditData] = useState(null);
   const [deleteFaqId, setDeleteFaqId] = useState(null);
@@ -30,6 +30,18 @@ const HomePage = () => {
   const handleModalToggle = () => {
     setOpenModal(!openModal);
   };
+
+  const { data, isFetching, refetch } = useQuery({
+    queryKey: ["faq"],
+    queryFn: async () => {
+      const allFAQData = await getDocs(collection(firestoreDb, "post"));
+      const data = allFAQData?.docs?.map((doc) => doc);
+      console.log(data);
+      // setCurrentData(data);
+      return data;
+    },
+    refetchOnWindowFocus: true,
+  });
 
   const handleAccordionToggle = (index) => {
     if (selctedIndex === index) {
@@ -53,17 +65,15 @@ const HomePage = () => {
       await deleteDoc(deleteDocument)
         .then(() => {
           toastMessageSuccess("FAQ Deleted.");
+          refetch();
         })
         .catch(() => {
           toastMessageError("Error deleting FAQ.");
         })
         .finally(() => {
           setIsButtonDisabled(false);
-
           toggleDeleteModal();
         });
-
-      // fetchFAQ();
     }
   };
   const toggleDeleteModal = () => {
@@ -107,27 +117,10 @@ const HomePage = () => {
     setPreviewImageUrl("");
   };
 
-  const { data, isFetching } = useQuery({
-    queryKey: ["faq"],
-    queryFn: async () => {
-      const allFAQData = await getDocs(collection(firestoreDb, "post"));
-      const data = allFAQData?.docs?.map((doc) => doc);
-      setCurrentData(data);
-      return data;
-    },
-  });
-
-  // async function fetchFAQ() {
-  //   const allFAQData = await getDocs(collection(firestoreDb, "post"));
-  //   const data = allFAQData?.docs?.map((doc) => doc);
-  //   console.log(data);
-  //   setCurrentData(data);
-  //   return data;
-  // }
-  // useEffect(() => {
-  //   fetchFAQ();
-  // }, [openModal]);
-  console.log(data, currentData, isFetching);
+  //the new post is not updated if the useeffect is removed ,
+  useEffect(() => {
+    refetch();
+  }, [openModal]);
 
   return (
     <HomeLayout>
@@ -189,7 +182,7 @@ const HomePage = () => {
           </div>
         ) : (
           <>
-            {currentData?.map((data, index) => {
+            {data?.map((data, index) => {
               const postId = data.id;
               const currentPostData = data.data();
               return (
