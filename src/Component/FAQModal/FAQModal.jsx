@@ -1,11 +1,13 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { PiSpinnerBold } from "react-icons/pi";
 import { RxCross1 } from "react-icons/rx";
+import { BsImages } from "react-icons/bs";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { firestoreDb } from "../../Utils/Firebase";
 import { AuthContext } from "../../Context/UserAuthContext";
+import "./FAQModal.css";
 import {
   isQuillEmpty,
   validateFAQPost,
@@ -17,12 +19,20 @@ import {
 import { ReactQuillCompressor } from "../../services/ReactQuillCompressor/ReactQuillCompressor";
 import { queryClient } from "../../main";
 const FAQModal = ({ modalState, toggleModal, editDocData }) => {
+  // context
   const { currentUser } = useContext(AuthContext);
+
+  // states
   const [isLoading, setIsLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [postData, setPostData] = useState({});
   const [editorContent, setEditorContent] = useState("");
+
+  // refs
   const inputRef = useRef();
+  const quillRef = useRef();
+
+  //function
   //handle form value change
   const handleChange = (e) => {
     const { value, name } = e.target;
@@ -39,7 +49,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
           setEditorContent("");
           toggleModal();
           resolve();
-          queryClient.invalidateQueries({queryKey:['faq']});
+          queryClient.invalidateQueries({ queryKey: ["faq"] });
         })
         .catch(() => {
           toastMessageError("Error updating FAQ.");
@@ -60,14 +70,12 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
       setFormErrors({ ...formErrors, ["body"]: "FAQ content is required" });
       setIsLoading(false);
     }
-
     const updatedContent = await ReactQuillCompressor(editorContent);
     const submittedData = {
       title: postData?.title,
       body: updatedContent,
       userId: currentUser?.uid,
     };
-
     if (
       postData?.postId &&
       !isQuillEmpty(editorContent) &&
@@ -98,6 +106,18 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
     toggleModal();
   };
 
+  //fucntion for image change in editor quill
+  const handleImageChange = (e) => {
+    const files = e.target.files;
+    for (let i = -0; i < files.length; i++) {
+      const query = document.querySelector(".ql-editor");
+      const newImage = document.createElement("img");
+      newImage.src = URL.createObjectURL(files[i]);
+      const newHtml = newImage;
+      query.append(newHtml);
+    }
+  };
+
   // Effects
   useEffect(() => {
     setIsLoading(false);
@@ -122,6 +142,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
       setIsLoading(false);
     }
   }, [formErrors]);
+
   return (
     <div
       className={`fixed  w-full overflow-auto z-[100] h-full  backdrop-blur-sm top-0 z-1 right-0 justify-center items-center ${
@@ -137,7 +158,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
         <form
           id="form"
           onSubmit={handleSubmit}
-          className="z-[22] w-[36rem] overflow-y-auto overflow-x-hidden h-[38rem] flex flex-col justify-start items-center p-2 bg-white rounded-md gap-[2rem] py-5 border-[1px] text-blue-600 border-gray-300">
+          className="z-[22] relative w-[36rem] overflow-y-auto overflow-x-hidden h-[38rem] flex flex-col justify-start items-center p-2 bg-white rounded-md gap-[2rem] py-5 border-[1px] text-blue-600 border-gray-300">
           <div className="relative min-h-[2.5rem] w-full border-b-[1px]  border-blue-400 text-blue-600 flex justify-center items-center text-xl font-[400] ">
             Create FAQ
             <span
@@ -173,23 +194,36 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
                 </span>
               )}
             </label>
-            <div className="w-[90%] flex justify-center items-center flex-col h-auto pb-2">
+            <div className="relative w-[90%] flex justify-center items-center flex-col h-auto pb-2">
               <span className="w-full  h-10 flex justify-start items-center  overflow-hidden text-md font-[500]">
                 * FAQ Content
               </span>
+              <label
+                htmlFor="multipleImage"
+                className="absolute top-[3.4rem] right-7   sm:right-[5.2rem] h-[15px] w-[15px] cursor-pointer text-black z-10 hover:text-blue-700">
+                <BsImages className="" />
+              </label>
+              <input
+                id="multipleImage"
+                type="file"
+                multiple
+                hidden
+                accept="image/*"
+                onChange={handleImageChange}
+              />
               <ReactQuill
                 id="body"
                 name="body"
                 theme="snow"
+                ref={quillRef}
                 value={editorContent}
                 onChange={setEditorContent}
                 modules={{
                   toolbar: [
                     [{ header: [1, 2] }],
-                    ["bold", "italic", "underline", "strike"],
+                    ["bold", "italic", "underline"],
                     [{ list: "ordered" }, { list: "bullet" }],
-                    ["link", "image"],
-                    [{ direction: "ltr" }],
+                    ["link", "code-block"],
                   ],
                   clipboard: {
                     matchVisual: false,
@@ -198,6 +232,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
                 placeholder="Start typing..."
                 className="w-full text-black/80"
               />
+
               {formErrors?.body && (
                 <span className="w-full relative top-10 px-2 h-10 flex justify-start items-center text-rose-400  overflow-hidden text-sm">
                   {formErrors?.body}

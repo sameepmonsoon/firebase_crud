@@ -1,0 +1,5 @@
+#read-quill .ql-container {
+  min-height: 5rem;
+  border: none;
+  background: #fefcfc;
+}

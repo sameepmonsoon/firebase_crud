@@ -9,6 +9,7 @@ import { AuthContext } from "../Context/UserAuthContext";
 import { useContext } from "react";
 import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { firestoreDb } from "../Utils/Firebase";
+import "./HomePage.css";
 import {
   toastMessageError,
   toastMessageSuccess,
@@ -22,7 +23,6 @@ const HomePage = () => {
   const [openModal, setOpenModal] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  // const [currentData, setCurrentData] = useState([]);
   const [selctedIndex, setSelectedIndex] = useState(null);
   const [editData, setEditData] = useState(null);
   const [deleteFaqId, setDeleteFaqId] = useState(null);
@@ -120,7 +120,7 @@ const HomePage = () => {
     <HomeLayout>
       {previewImageUrl.length > 0 && (
         <div
-          className="fixed w-full h-full z-[200] bg-black/40 backdrop-blur-sm flex justify-center items-center"
+          className="fixed w-full h-full z-[200] bg-white/50 backdrop-blur-sm flex justify-center items-center"
           onClick={removePreviewImage}>
           {previewImageUrl.map((item, index) => (
             <img
@@ -181,22 +181,26 @@ const HomePage = () => {
               const currentPostData = data.data();
               return (
                 <div
-                onClick={() => handleAccordionToggle(index)}
                   key={index}
                   className={`h-auto  cursor-pointer bg-white border-[1px] ${
                     selctedIndex === index &&
                     "border-blue-400 outline outline-2 outline-offset-1 outline-blue-200 shadow-sm shadow-black/30"
                   } border-blue-200 w-full flex flex-col justify-around items-center rounded-md `}>
                   <div
-                    className={`w-full hover:bg-blue-100 flex justify-around h-40  md:h-[2.8rem] items-center md:flex-row flex-col p-1  ${
+                    className={`w-full relative hover:bg-blue-100 flex justify-around h-40  md:h-[2.8rem] items-center md:flex-row flex-col p-1  ${
                       selctedIndex === index && "bg-blue-100 rounded-t-md"
                     }`}>
+                    <div
+                      className="absolute top-0 left-0 w-full h-full z-0"
+                      onClick={() => handleAccordionToggle(index)}>
+                      &nbsp;
+                    </div>
                     <div
                       className={`order-1 w-full md:w-auto md:flex-1 flex-wrap  flex justify-start px-2 items-center h-full text-[16px]  sm:text-[16px] overflow-hidden `}>
                       {currentPostData?.title}
                     </div>
 
-                    <div className="order-2 w-auto h-40 md:h-[2.5rem] flex justify-start items-center gap-2 flex-wrap" >
+                    <div className="z-10 order-2 w-auto h-40 md:h-[2.5rem] flex justify-start items-center gap-2 flex-wrap">
                       {isAdminRole && (
                         <span
                           onClick={() => {
@@ -205,7 +209,7 @@ const HomePage = () => {
                           className="  text-emerald-600 sm:w-[2rem] sm:h-[80%] flex justify-center items-center cursor-pointer group border-[0px] rounded-md border-emerald-400">
                           <FiEdit
                             size={25}
-                            className="group-hover:text-green-800"
+                            className="group-hover:text-green-800 z-2"
                           />
                         </span>
                       )}
@@ -213,24 +217,24 @@ const HomePage = () => {
                         <button
                           disabled={isButtonDisabled}
                           onClick={() => handleDelete(postId)}
-                          className={` text-red-600 sm:w-[2rem] sm:h-[80%] flex justify-center items-center ${
+                          className={`z-10 text-red-600 sm:w-[2rem] sm:h-[80%] flex justify-center items-center ${
                             isButtonDisabled
                               ? "cursor-not-allowed"
                               : "cursor-pointer"
                           } group border-[0px] rounded-md border-red-700`}>
                           <MdDeleteOutline
                             size={25}
-                            className="group-hover:text-red-800 text-red-600"
+                            className="group-hover:text-red-800 text-red-600 z-2"
                           />
                         </button>
                       )}
                       <span
-                        className="  text-blue-900 sm:w-[2rem] w-[1.8rem] h-[38%] sm:h-[80%] flex justify-center items-center cursor-pointer group border-[0px] rounded-md border-blue-800"
+                        className=" z-2 text-blue-900 sm:w-[2rem] w-[1.8rem] h-[38%] sm:h-[80%] flex justify-center items-center cursor-pointer group border-[0px] rounded-md border-blue-800"
                         onClick={() => handleAccordionToggle(index)}>
                         {selctedIndex === index ? (
                           <AiOutlineMinus
                             size={25}
-                            className="group-hover:text-blue-800 "
+                            className="group-hover:text-blue-800"
                           />
                         ) : (
                           <MdAdd
@@ -242,13 +246,15 @@ const HomePage = () => {
                     </div>
                   </div>
                   {selctedIndex === index && (
-                    <div className="w-full min-h-[4rem] text-gray-600 p-1 py-2 flex justify-start items-center flex-wrap text-[14px] sm:text-[17px] flex-col border-t-[1px] border-blue-200">
+                    <div
+                      className={`w-full min-h-[4rem] text-gray-600 p-1 py-2 flex justify-start items-center flex-wrap text-[14px] sm:text-[17px] flex-col border-t-[1px] border-blue-200`}>
                       <div
                         className="w-full z-1"
                         onClick={(e) => {
                           handleFAQContentClick(e);
                         }}>
                         <ReactQuill
+                          id="read-quill"
                           value={currentPostData?.body}
                           readOnly={true}
                           theme={"snow"}

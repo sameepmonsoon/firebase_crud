@@ -23,7 +23,7 @@
 body {
   overflow: hidden;
   ::-webkit-scrollbar {
-    width: 9px;
+    width: 4px;
   }
 
   ::-webkit-scrollbar-track {
@@ -32,8 +32,8 @@ body {
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: rgb(182, 182, 182);
-    border-radius: 3px;
+    background-color: rgb(126, 126, 126);
+    border-radius: 10px;
     height: 5px;
   }
 }
