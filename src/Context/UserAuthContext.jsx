@@ -6,10 +6,12 @@ import {
   createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { collection, getDocs, query, where } from "firebase/firestore";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../Store/authSlice.jsx";
 export const AuthContext = createContext(null);
 const UserAuthContextProvider = ({ children }) => {
+  const dispatch = useDispatch();
   // state for current user
-
   const [currentUser, setCurrentUser] = useState(
     localStorage.getItem("currentUser")
   );
@@ -55,6 +57,9 @@ const UserAuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     const subscribe = firestoreAuth.onAuthStateChanged((user) => {
+      if (user) {
+        dispatch(loginUser({ email: user.email, uid: user.uid }));
+      }
       localStorage.setItem("currentUser", user);
       setCurrentUser(user);
       setIsLoading(false);

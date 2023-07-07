@@ -2,16 +2,19 @@ import HomeLayout from "../Layout/HomeLayout";
 import { useContext, useState } from "react";
 import { AuthContext } from "../Context/UserAuthContext";
 import { Link } from "react-router-dom";
-// import { collection, getDocs, query, where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-// import { firestoreDb } from "../Utils/Firebase";
+import { loginUser } from "../Store/authSlice";
 import { PiSpinnerBold } from "react-icons/pi";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import {
   toastMessageError,
   toastMessageSuccess,
 } from "../services/ToastMessage/ToastMessage";
+import { useDispatch } from "react-redux";
+// import { collection, getDocs, query, where } from "firebase/firestore";
+// import { firestoreDb } from "../Utils/Firebase";
 const SignIn = () => {
+  const dispatch = useDispatch();
   const { login } = useContext(AuthContext);
   const [formValues, setFormValues] = useState([]);
   const [formError, setFormError] = useState([]);
@@ -44,13 +47,14 @@ const SignIn = () => {
     if (formValues.password.trim().length > 0) {
       setFormError({});
       await login(formValues.email, formValues.password)
-        .then(async () => {
+        .then(async (user) => {
           // const userId = query(
           //   collection(firestoreDb, "users"),
-          //   where("uid", "==", res.user.uid)
+          //   where("uid", "==", user.user.uid)
           // );
           // const allDocs = await getDocs(userId);
-
+          // console.log(allDocs);
+          dispatch(loginUser({ email: user.user.email, uid: user.user.uid }));
           toastMessageSuccess("Welcome!");
           navigate("/");
         })

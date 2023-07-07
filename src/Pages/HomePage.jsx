@@ -18,7 +18,11 @@ import DeleteModal from "../Component/Delete Modal/DeleteModal";
 import ReactQuill from "react-quill";
 import { useQuery } from "@tanstack/react-query";
 import { FaqLoadingSkeleton } from "../Component/FAQ_loading_skeleton/FaqLoadingSkeleton";
+import { useSelector } from "react-redux";
+
 const HomePage = () => {
+  const { currentuser } = useSelector((state) => state.auth);
+  console.log(currentuser);
   const { isAdminRole, logOut } = useContext(AuthContext);
   const [openModal, setOpenModal] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -118,9 +122,12 @@ const HomePage = () => {
 
   return (
     <HomeLayout>
+      {/* <div className="absolute top-5 left-5 rounded-sm w-40 flex justify-start items-center flex-col h-40 bg-blue-100 border-[1px] border-black/20">
+        <span className="w-full whitespace-pre-wrap">{currentuser.email}</span>
+      </div> */}
       {previewImageUrl.length > 0 && (
         <div
-          className="fixed w-full h-full z-[200] bg-white/50 backdrop-blur-sm flex justify-center items-center"
+          className="fixed w-full  h-full z-[200] bg-white/50 backdrop-blur-sm flex justify-center items-center"
           onClick={removePreviewImage}>
           {previewImageUrl.map((item, index) => (
             <img
@@ -140,7 +147,7 @@ const HomePage = () => {
       <div
         id="home"
         className="w-[90%] md:w-[60%] lg:w-[70%]  min-h-[17rem] max-h-[45rem] bg-white text-black border-[1px] shadow-lg flex justify-start items-start absolute top-3 flex-col gap-[0.8rem] p-2 m-1 rounded-[3px] overflow-y-auto overflow-x-hidden">
-        <div className="md:min-h-[3rem] bg-blue-600 p-2 md:p-1 min-h-[5.5rem] relative w-full flex flex-col  md:flex-row justify-start md:justify-between gap-2 md:gap-10  items-start md:items-center text-md sm:text-xl font-[500] text-white">
+        <div className="md:min-h-[3rem] bg-blue-600   p-2 md:p-1 min-h-[5.5rem] relative w-full flex flex-col  md:flex-row justify-start md:justify-between gap-2 md:gap-10  items-start md:items-center text-md sm:text-xl font-[500] text-white">
           Frequently Asked Questions
           {isAdminRole && (
             <div
@@ -160,7 +167,6 @@ const HomePage = () => {
           modalState={openModal}
           editDocData={editData}
         />
-
         <DeleteModal
           deleteModalState={openDeleteModal}
           closeDeleteModalFunction={toggleDeleteModal}
@@ -182,7 +188,7 @@ const HomePage = () => {
               return (
                 <div
                   key={index}
-                  className={`h-auto  cursor-pointer bg-white border-[1px] ${
+                  className={`h-auto cursor-pointer bg-white border-[1px] ${
                     selctedIndex === index &&
                     "border-blue-400 outline outline-2 outline-offset-1 outline-blue-200 shadow-sm shadow-black/30"
                   } border-blue-200 w-full flex flex-col justify-around items-center rounded-md `}>

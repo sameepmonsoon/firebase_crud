@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PiSpinnerBold } from "react-icons/pi";
 import { RxCross1 } from "react-icons/rx";
 import { BsImages } from "react-icons/bs";
@@ -6,7 +6,6 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { firestoreDb } from "../../Utils/Firebase";
-import { AuthContext } from "../../Context/UserAuthContext";
 import "./FAQModal.css";
 import {
   isQuillEmpty,
@@ -18,9 +17,12 @@ import {
 } from "../../services/ToastMessage/ToastMessage";
 import { ReactQuillCompressor } from "../../services/ReactQuillCompressor/ReactQuillCompressor";
 import { queryClient } from "../../main";
+import { useSelector } from "react-redux";
 const FAQModal = ({ modalState, toggleModal, editDocData }) => {
+  const { currentuser } = useSelector((state) => state.auth);
+
   // context
-  const { currentUser } = useContext(AuthContext);
+  // const { currentUser } = useContext(AuthContext);
 
   // states
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +54,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
           queryClient.invalidateQueries({ queryKey: ["faq"] });
         })
         .catch(() => {
-          toastMessageError("Error updating FAQ.");
+          toastMessageError("File to large to upload.");
           reject();
         })
         .finally(() => {
@@ -74,7 +76,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
     const submittedData = {
       title: postData?.title,
       body: updatedContent,
-      userId: currentUser?.uid,
+      userId: currentuser?.uid,
     };
     if (
       postData?.postId &&
@@ -109,13 +111,16 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
   //fucntion for image change in editor quill
   const handleImageChange = (e) => {
     const files = e.target.files;
-    for (let i = -0; i < files.length; i++) {
-      const query = document.querySelector(".ql-editor");
-      const newImage = document.createElement("img");
-      newImage.src = URL.createObjectURL(files[i]);
-      const newHtml = newImage;
-      query.append(newHtml);
-    }
+    if (files.length > 5) {
+      toastMessageError(`You can only add 5 images at once.`);
+    } else
+      for (let i = -0; i < files.length; i++) {
+        const query = document.querySelector(".ql-editor");
+        const newImage = document.createElement("img");
+        newImage.src = URL.createObjectURL(files[i]);
+        const newHtml = newImage;
+        query.append(newHtml);
+      }
   };
 
   // Effects
@@ -200,7 +205,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
               </span>
               <label
                 htmlFor="multipleImage"
-                className="absolute top-[3.4rem] right-7   sm:right-[5.2rem] h-[15px] w-[15px] cursor-pointer text-black z-10 hover:text-blue-700">
+                className="absolute top-[3.4rem] right-[4rem] sm:right-[5.2rem] h-[15px] w-[15px] cursor-pointer text-black z-10 hover:text-blue-700">
                 <BsImages className="" />
               </label>
               <input

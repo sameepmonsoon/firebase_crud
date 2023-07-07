@@ -2,4 +2,7 @@
   min-height: 5rem;
   border: none;
   background: #fefcfc;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
