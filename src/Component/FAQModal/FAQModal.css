@@ -1,14 +1,14 @@
 #body .ql-toolbar {
     width: 100%;
   background: #eaecec;
-  border-top-left-radius: 0.5em;
-  border-top-right-radius: 0.5em;
+  border-top-left-radius: 0.2em;
+  border-top-right-radius: 0.2em;
   border-bottom: 1px solid rgb(169, 169, 169);
 }
 
 #body .ql-container {
   min-height: 5rem;
-  border-bottom-left-radius: 0.5em;
-  border-bottom-right-radius: 0.5em;
+  border-bottom-left-radius: 0.2em;
+  border-bottom-right-radius: 0.2em;
   background: #fefcfc;
 }

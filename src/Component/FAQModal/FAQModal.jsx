@@ -20,7 +20,6 @@ import { queryClient } from "../../main";
 import { useSelector } from "react-redux";
 const FAQModal = ({ modalState, toggleModal, editDocData }) => {
   const { currentuser } = useSelector((state) => state.auth);
-
   // context
   // const { currentUser } = useContext(AuthContext);
 
@@ -50,8 +49,8 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
           setPostData({});
           setEditorContent("");
           toggleModal();
-          resolve();
           queryClient.invalidateQueries({ queryKey: ["faq"] });
+          resolve();
         })
         .catch(() => {
           toastMessageError("File to large to upload.");
@@ -163,7 +162,7 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
         <form
           id="form"
           onSubmit={handleSubmit}
-          className="z-[22] relative w-[36rem] overflow-y-auto overflow-x-hidden h-[38rem] flex flex-col justify-start items-center p-2 bg-white rounded-md gap-[2rem] py-5 border-[1px] text-blue-600 border-gray-300">
+          className="z-[22] relative w-[36rem] overflow-y-auto overflow-x-hidden h-[38rem] flex flex-col justify-start items-center p-2 bg-white rounded-sm gap-[2rem] py-5 border-[1px] text-blue-600 border-gray-300">
           <div className="relative min-h-[2.5rem] w-full border-b-[1px]  border-blue-400 text-blue-600 flex justify-center items-center text-xl font-[400] ">
             Create FAQ
             <span

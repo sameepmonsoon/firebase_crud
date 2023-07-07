@@ -19,10 +19,11 @@ import ReactQuill from "react-quill";
 import { useQuery } from "@tanstack/react-query";
 import { FaqLoadingSkeleton } from "../Component/FAQ_loading_skeleton/FaqLoadingSkeleton";
 import { useSelector } from "react-redux";
-
+import { CiUser } from "react-icons/ci";
+import { useNavigate } from "react-router-dom";
+import { queryClient } from "../main";
 const HomePage = () => {
   const { currentuser } = useSelector((state) => state.auth);
-  console.log(currentuser);
   const { isAdminRole, logOut } = useContext(AuthContext);
   const [openModal, setOpenModal] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -34,15 +35,14 @@ const HomePage = () => {
   const handleModalToggle = () => {
     setOpenModal(!openModal);
   };
-
-  const { data, isFetching, refetch } = useQuery({
+  const navigate = useNavigate();
+  const { data, isFetching } = useQuery({
     queryKey: ["faq"],
     queryFn: async () => {
       const allFAQData = await getDocs(collection(firestoreDb, "post"));
       const data = allFAQData?.docs?.map((doc) => doc);
       return data;
     },
-    refetchOnWindowFocus: true,
   });
 
   const handleAccordionToggle = (index) => {
@@ -68,7 +68,7 @@ const HomePage = () => {
       await deleteDoc(deleteDocument)
         .then(() => {
           toastMessageSuccess("FAQ Deleted.");
-          refetch();
+          queryClient.invalidateQueries({ queryKey: ["faq"] });
         })
         .catch(() => {
           toastMessageError("Error deleting FAQ.");
@@ -122,9 +122,14 @@ const HomePage = () => {
 
   return (
     <HomeLayout>
-      {/* <div className="absolute top-5 left-5 rounded-sm w-40 flex justify-start items-center flex-col h-40 bg-blue-100 border-[1px] border-black/20">
-        <span className="w-full whitespace-pre-wrap">{currentuser.email}</span>
-      </div> */}
+      {currentuser.displayName && (
+        <div className="hidden absolute top-5 left-5 rounded-full min-w-30 max-w-40 md:flex cursor-pointer justify-between px-2 items-center flex-row h-10 border-[1px] border-blue-200 hover:bg-blue-100">
+          <span className=" w-[2rem] h-full flex justify-center items-center rounded-l-full">
+            <CiUser size={23} />
+          </span>
+          <span className="flex-1">{currentuser?.displayName}</span>
+        </div>
+      )}
       {previewImageUrl.length > 0 && (
         <div
           className="fixed w-full  h-full z-[200] bg-white/50 backdrop-blur-sm flex justify-center items-center"
@@ -279,7 +284,10 @@ const HomePage = () => {
       </div>
 
       <button
-        onClick={() => logOut()}
+        onClick={() => {
+          logOut();
+          navigate("/signin");
+        }}
         className=" absolute bottom-3 w-[8rem] rounded-sm right-5 bg-red-700 text-white h-[2.4rem] flex justify-center items-center">
         <span className="flex-1 text-lg">Logout</span>
         <span className="w-10  h-full justify-center items-center flex rounded-r-sm">

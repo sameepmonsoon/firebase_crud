@@ -4,18 +4,22 @@ import { AuthContext } from "../Context/UserAuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { validateUserForm } from "../services/HandleFormValidation/HandleFormValidation";
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
-import { firestoreDb } from "../Utils/Firebase";
+import { firestoreAuth, firestoreDb } from "../Utils/Firebase";
 import { PiSpinnerBold } from "react-icons/pi";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { updateProfile } from "firebase/auth";
 import {
   toastMessageError,
   toastMessageSuccess,
 } from "../services/ToastMessage/ToastMessage";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../Store/authSlice";
 const SignUp = () => {
+  const dispatch = useDispatch();
   const { signUp } = useContext(AuthContext);
   const [formValues, setFormValues] = useState([]);
   const [formErrors, setFormErrors] = useState({});
-  const [togglePassword, setTogglePassword] = useState("text");
+  const [togglePassword, setTogglePassword] = useState("password");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -57,7 +61,13 @@ const SignUp = () => {
       } else {
         await signUp(formValues.email, formValues.password)
           .then(async (res) => {
-            toastMessageSuccess("Welcome!");
+            dispatch(
+              loginUser({
+                email: res.user.email,
+                uid: res.user.uid,
+                displayName: formValues.username,
+              })
+            );
             if (formValues.roles === "admin" || formValues.roles === "user") {
               await addDoc(collection(firestoreDb, "users"), {
                 uid: res?.user?.uid,
@@ -71,7 +81,13 @@ const SignUp = () => {
                   console.log(err.code);
                 });
             }
-            navigate("/");
+            toastMessageSuccess(`Welcome! ${formValues?.username}`);
+            await updateProfile(firestoreAuth?.currentUser, {
+              displayName: formValues?.username,
+            }).then(() => {
+              localStorage.setItem("currentUser", res?.user);
+              navigate("/");
+            });
           })
           .catch((err) => {
             if (err.code === "auth/email-already-in-use") {
@@ -97,7 +113,7 @@ const SignUp = () => {
       <form
         action=""
         onSubmit={handleSubmit}
-        className="overflow-x-hidden border-black/10 overflow-y-auto w-[20rem] sm:w-[32rem] h-[30rem] sm:h-[37rem] flex flex-col justify-start items-center p-10 bg-white border-[1px] shadow-md text-black rounded-lg gap-9">
+        className="overflow-x-hidden border-black/10 overflow-y-auto w-[20rem] sm:w-[32rem] h-[30rem] sm:h-[37rem] flex flex-col justify-start items-center p-10 bg-white border-[1px] shadow-md text-black rounded-sm gap-9">
         <p className="w-full flex justify-center items-center text-2xl capitalize text-blue-600 font-[600] border-b-[1px] border-black/40 py-2">
           sign up
         </p>
@@ -147,16 +163,16 @@ const SignUp = () => {
             required
             id="Password"
             onChange={handleChange}
-            className=" border-[1px] outline-0 p-1 h-[2.7rem] px-3 w-full sm:w-[25rem] border-black/40 rounded-sm focus:outline focus:outline-2 focus:outline-blue-300 focus:outline-offset-1 focus:border-blue-500"
+            className=" border-[1px] outline-0 p-1 h-[2.7rem] px-3 pr-10 w-full sm:w-[25rem] border-black/40 rounded-sm focus:outline focus:outline-2 focus:outline-blue-300 focus:outline-offset-1 focus:border-blue-500"
             placeholder="Password"
           />
           <span
-            className="absolute right-7 top-2 cursor-pointer"
+            className="absolute right-6 top-[0.67rem] cursor-pointer hover:bg-gray-300/80 text-black/80 flex justify-center items-center p-[2px] rounded-full"
             onClick={handleTogglePassword}>
             {togglePassword === "text" ? (
-              <AiOutlineEyeInvisible size={25} />
+              <AiOutlineEye size={20} />
             ) : (
-              <AiOutlineEye size={25} />
+              <AiOutlineEyeInvisible size={20} />
             )}
           </span>
           {formErrors?.password && (

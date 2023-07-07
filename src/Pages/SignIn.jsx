@@ -18,7 +18,7 @@ const SignIn = () => {
   const { login } = useContext(AuthContext);
   const [formValues, setFormValues] = useState([]);
   const [formError, setFormError] = useState([]);
-  const [togglePassword, setTogglePassword] = useState("text");
+  const [togglePassword, setTogglePassword] = useState("password");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   //   function for togglePassword
@@ -48,14 +48,18 @@ const SignIn = () => {
       setFormError({});
       await login(formValues.email, formValues.password)
         .then(async (user) => {
-          // const userId = query(
-          //   collection(firestoreDb, "users"),
-          //   where("uid", "==", user.user.uid)
-          // );
-          // const allDocs = await getDocs(userId);
-          // console.log(allDocs);
-          dispatch(loginUser({ email: user.user.email, uid: user.user.uid }));
-          toastMessageSuccess("Welcome!");
+          dispatch(
+            loginUser({
+              email: user.user.email,
+              uid: user.user.uid,
+              displayName: user.user.displayName,
+            })
+          );
+          toastMessageSuccess(
+            `Welcome! ${
+              user.user.displayName != null ? user.user.displayName : ""
+            }`
+          );
           navigate("/");
         })
         .catch((err) => {
@@ -82,7 +86,7 @@ const SignIn = () => {
       <form
         action=""
         onSubmit={handleSubmit}
-        className="w-[20rem] sm:w-[28.5rem] h-[30rem] flex flex-col justify-start items-center p-10 bg-white border-[1px] shadow-md text-black border-black/10 rounded-lg gap-10">
+        className="w-[20rem] sm:w-[28rem] h-[28rem] flex flex-col justify-start items-center p-10 bg-white border-[1px] shadow-md text-black border-black/10 rounded-sm gap-10">
         <p className="w-full flex  text-blue-600 justify-center items-center text-[1.5rem] capitalize font-[600] border-b-[1px] border-black/30 py-2">
           sign In
         </p>
@@ -108,16 +112,16 @@ const SignIn = () => {
             required
             id="Password"
             onChange={handleChange}
-            className="border-[1px] outline-0 p-1 px-3 h-[2.7rem] w-full sm:w-[95%] border-black/40 rounded-sm focus:outline focus:outline-2 focus:outline-blue-300 focus:outline-offset-1 focus:border-blue-500"
+            className="border-[1px] outline-0 p-1 px-3 pr-8 h-[2.7rem] w-full sm:w-[95%] border-black/40 rounded-sm focus:outline focus:outline-2 focus:outline-blue-300 focus:outline-offset-1 focus:border-blue-500"
             placeholder="Password"
           />
           <span
-            className="absolute right-5 cursor-pointer  top-[0.6rem] "
+            className="absolute right-4 top-[0.67rem] cursor-pointer hover:bg-gray-300/80 text-black/80 flex justify-center items-center p-[2px] rounded-full"
             onClick={handleTogglePassword}>
             {togglePassword === "text" ? (
-              <AiOutlineEyeInvisible size={25} />
+              <AiOutlineEye size={20} />
             ) : (
-              <AiOutlineEye size={25} />
+              <AiOutlineEyeInvisible size={20} />
             )}
           </span>
           {formError.password && (
