@@ -11,12 +11,11 @@ const authSlice = createSlice({
       state.currentuser = action.payload;
     },
     loginUser: (state, action) => {
-      console.log(action.payload);
       state.currentuser = action.payload;
     },
     logoutUser: (state) => {
-      state.currentuser = {};
       localStorage.removeItem("currentUser");
+      state.currentuser = {};
     },
   },
 });

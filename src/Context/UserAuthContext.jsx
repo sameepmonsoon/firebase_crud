@@ -58,7 +58,6 @@ const UserAuthContextProvider = ({ children }) => {
   useEffect(() => {
     const subscribe = firestoreAuth.onAuthStateChanged((user) => {
       if (user) {
-        console.log(user);
         dispatch(
           loginUser({
             email: user.email,
@@ -66,8 +65,8 @@ const UserAuthContextProvider = ({ children }) => {
             displayName: user.displayName,
           })
         );
+        localStorage.setItem("currentUser", user);
       }
-      localStorage.setItem("currentUser", JSON.stringify(user));
       setCurrentUser(user);
       setIsLoading(false);
     });

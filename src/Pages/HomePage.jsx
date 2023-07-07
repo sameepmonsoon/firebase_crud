@@ -8,7 +8,7 @@ import FAQModal from "../Component/FAQModal/FAQModal";
 import { AuthContext } from "../Context/UserAuthContext";
 import { useContext } from "react";
 import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
-import { firestoreDb } from "../Utils/Firebase";
+import { firestoreAuth, firestoreDb } from "../Utils/Firebase";
 import "./HomePage.css";
 import {
   toastMessageError,
@@ -18,13 +18,15 @@ import DeleteModal from "../Component/Delete Modal/DeleteModal";
 import ReactQuill from "react-quill";
 import { useQuery } from "@tanstack/react-query";
 import { FaqLoadingSkeleton } from "../Component/FAQ_loading_skeleton/FaqLoadingSkeleton";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CiUser } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import { queryClient } from "../main";
+import { signOut } from "firebase/auth";
+import { logoutUser } from "../Store/authSlice";
 const HomePage = () => {
   const { currentuser } = useSelector((state) => state.auth);
-  const { isAdminRole, logOut } = useContext(AuthContext);
+  const { isAdminRole } = useContext(AuthContext);
   const [openModal, setOpenModal] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -35,6 +37,7 @@ const HomePage = () => {
   const handleModalToggle = () => {
     setOpenModal(!openModal);
   };
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { data, isFetching } = useQuery({
     queryKey: ["faq"],
@@ -285,8 +288,10 @@ const HomePage = () => {
 
       <button
         onClick={() => {
-          logOut();
-          navigate("/signin");
+          signOut(firestoreAuth).then(() => {
+            dispatch(logoutUser());
+            navigate("/signin");
+          });
         }}
         className=" absolute bottom-3 w-[8rem] rounded-sm right-5 bg-red-700 text-white h-[2.4rem] flex justify-center items-center">
         <span className="flex-1 text-lg">Logout</span>

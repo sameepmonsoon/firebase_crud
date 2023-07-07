@@ -85,7 +85,8 @@ const SignUp = () => {
             await updateProfile(firestoreAuth?.currentUser, {
               displayName: formValues?.username,
             }).then(() => {
-              localStorage.setItem("currentUser", res?.user);
+              // afterLogin();
+              // localStorage.setItem("currentUser", JSON.stringify(res?.user));
               navigate("/");
             });
           })

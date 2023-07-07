@@ -55,11 +55,13 @@ const SignIn = () => {
               displayName: user.user.displayName,
             })
           );
+
           toastMessageSuccess(
             `Welcome! ${
               user.user.displayName != null ? user.user.displayName : ""
             }`
           );
+          // afterLogin();
           navigate("/");
         })
         .catch((err) => {
