@@ -29,10 +29,10 @@ const validateUserForm = (values) => {
   if (values?.password?.trim().length === 0) {
     errors.password = "Password can't contain empty space";
   } else {
-    let passwordRegEx = /^(?=.{2,}\d)(?=.{2,}[a-zA-Z])(?=.*[\W]).{6,}$/;
+    let passwordRegEx = /^(?=.{2,}\d)(?=.{2,}[a-zA-Z])(?=.*[\W]).{6,10}$/;
     if (!passwordRegEx.test(values?.password)) {
       errors.password =
-        "Password must contain atleast 6 characters, one uppercase, one lowercase, one special-character and one number ";
+        "Password must contain (6-10) characters, one uppercase, one lowercase, one special-character and one number ";
     }
   }
   if (!values.roles) {

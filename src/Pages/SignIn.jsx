@@ -114,6 +114,7 @@ const SignIn = () => {
             required
             id="Password"
             onChange={handleChange}
+            maxLength={10}
             className="border-[1px] outline-0 p-1 px-3 pr-8 h-[2.7rem] w-full sm:w-[95%] border-black/40 rounded-sm focus:outline focus:outline-2 focus:outline-blue-300 focus:outline-offset-1 focus:border-blue-500"
             placeholder="Password"
           />
