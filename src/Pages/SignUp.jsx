@@ -193,7 +193,7 @@ const SignUp = () => {
             required
             defaultValue={""}
             onChange={handleChange}
-            className="border-[1px] outline-0 p-1 h-[2.7rem] px-3 w-full sm:w-[25rem] border-black/40 rounded-sm focus:outline focus:outline-2 focus:outline-blue-300 focus:outline-offset-1 focus:border-blue-500"
+            className="appearance-none border-[1px] outline-0 p-1 h-[2.7rem] px-3 w-full sm:w-[25rem] border-black/40 rounded-sm focus:outline focus:outline-2 focus:outline-blue-300 focus:outline-offset-1 focus:border-blue-500"
             placeholder="Select Role">
             <option value="" disabled hidden>
               Select Role

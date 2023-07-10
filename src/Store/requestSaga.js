@@ -2,6 +2,6 @@ import axios from "axios";
 export function requestGetUser() {
   return axios.request({
     method: "get",
-    url: "localhost:8000/blogPost/getAll",
+    url: "http://localhost:8000/blogPost/getAll",
   });
 }

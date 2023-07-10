@@ -24,7 +24,7 @@ import { useNavigate } from "react-router-dom";
 import { queryClient } from "../main";
 import { signOut } from "firebase/auth";
 import { logoutUser } from "../Store/authSlice";
-import { getUser } from "../Store/user";
+import { GET_USER } from "../Store/user";
 const HomePage = () => {
   const { currentuser } = useSelector((state) => state.auth);
   const { isAdminRole } = useContext(AuthContext);
@@ -125,8 +125,8 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    dispatch(getUser);
-  }, []);
+    dispatch({ type: GET_USER });
+  }, [dispatch]);
 
   const user = useSelector((state) => state.user.uesr);
   console.log(user);
@@ -162,7 +162,7 @@ const HomePage = () => {
       <div
         id="home"
         className="w-[90%] md:w-[60%] lg:w-[70%]  min-h-[17rem] max-h-[45rem] bg-white text-black border-[1px] shadow-lg flex justify-start items-start absolute top-3 flex-col gap-[0.8rem] p-2 m-1 rounded-[3px] overflow-y-auto overflow-x-hidden">
-        <div className="md:min-h-[3rem] bg-blue-600   p-2 md:p-1 min-h-[5.5rem] relative w-full flex flex-col  md:flex-row justify-start md:justify-between gap-2 md:gap-10  items-start md:items-center text-md sm:text-xl font-[500] text-white">
+        <div className="md:min-h-[3rem] bg-blue-600  p-2 md:p-1 min-h-[5.5rem] relative w-full flex flex-col  md:flex-row justify-start md:justify-between gap-2 md:gap-10  items-start md:items-center text-md sm:text-xl font-[500] text-white">
           Frequently Asked Questions
           {isAdminRole && (
             <div
@@ -268,7 +268,7 @@ const HomePage = () => {
                   </div>
                   {selctedIndex === index && (
                     <div
-                      className={`w-full min-h-[4rem] text-gray-600 p-1 py-2 flex justify-start items-center flex-wrap text-[14px] sm:text-[17px] flex-col border-t-[1px] border-blue-200`}>
+                      className={`w-full min-h-[4rem]  text-gray-600 p-1 py-2 flex justify-start items-center flex-wrap text-[14px] sm:text-[17px] flex-col border-t-[1px] border-blue-200`}>
                       <div
                         className="w-full z-1"
                         onClick={(e) => {

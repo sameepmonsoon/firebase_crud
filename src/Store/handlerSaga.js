@@ -4,6 +4,7 @@ import { setUser } from "./user";
 
 export function* handleGetUser(action) {
   try {
+    console.log(action);
     const response = yield call(requestGetUser);
     const { data } = response;
     console.log(data);
