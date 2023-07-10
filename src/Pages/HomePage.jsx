@@ -3,7 +3,7 @@ import { MdAdd, MdDeleteOutline } from "react-icons/md";
 import HomeLayout from "../Layout/HomeLayout";
 import { FiEdit } from "react-icons/fi";
 import { IoAdd, IoLogOutOutline } from "react-icons/io5";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FAQModal from "../Component/FAQModal/FAQModal";
 import { AuthContext } from "../Context/UserAuthContext";
 import { useContext } from "react";
@@ -24,6 +24,7 @@ import { useNavigate } from "react-router-dom";
 import { queryClient } from "../main";
 import { signOut } from "firebase/auth";
 import { logoutUser } from "../Store/authSlice";
+import { getUser } from "../Store/user";
 const HomePage = () => {
   const { currentuser } = useSelector((state) => state.auth);
   const { isAdminRole } = useContext(AuthContext);
@@ -123,6 +124,12 @@ const HomePage = () => {
     setPreviewImageUrl("");
   };
 
+  useEffect(() => {
+    dispatch(getUser);
+  }, []);
+
+  const user = useSelector((state) => state.user.uesr);
+  console.log(user);
   return (
     <HomeLayout>
       {currentuser.displayName && (
