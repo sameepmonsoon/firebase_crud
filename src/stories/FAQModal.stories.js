@@ -3,14 +3,16 @@ import FAQModal from "../Component/FAQModal/FAQModal";
 export default {
   title: "Components/FAQModal",
   component: FAQModal,
-  args: {
+  argTypes: {
     onclick: { action: "clicked" },
   },
 };
 
-const Template = (args) => {
-  <FAQModal {...args} />;
-};
+const Template = (args) => <FAQModal {...args} />;
 
 export const FAQStory = Template.bind({});
-FAQStory.args = {};
+FAQStory.args = {
+  toggleModal: " () => {}",
+  modalState: 'true',
+  editDocData: "{}",
+};

@@ -9,9 +9,7 @@ const DeleteModal = (props) => {
     isLoading,
     deleteModalTitle,
   } = props;
-  const handleCloseModal = () => {
-    closeDeleteModalFunction();
-  };
+
   return (
     <div
       className={`${
@@ -33,9 +31,7 @@ const DeleteModal = (props) => {
           </button>
           <button
             disabled={isLoading}
-            onClick={() => {
-              handleCloseModal();
-            }}
+            onClick={closeDeleteModalFunction}
             className="w-[8rem] rounded-sm bg-green-600 text-white h-[2.2rem] flex justify-center items-center">
             <span className="flex-1 text-lg">Cancel</span>
             <span className="w-10  h-full justify-center items-center flex rounded-r-sm">

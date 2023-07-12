@@ -7,6 +7,7 @@ import "react-quill/dist/quill.snow.css";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { firestoreDb } from "../../Utils/Firebase";
 import "./FAQModal.css";
+import PropTypes from "prop-types";
 import {
   isQuillEmpty,
   validateFAQPost,
@@ -266,4 +267,9 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
   );
 };
 
+FAQModal.prototype = {
+  modalState: PropTypes.func,
+  toggleModal: PropTypes.boolean,
+  editDocData: PropTypes.object,
+};
 export default FAQModal;
