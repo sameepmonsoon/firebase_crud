@@ -1,12 +1,14 @@
 import { MdDeleteOutline } from "react-icons/md";
 import { RxCross1 } from "react-icons/rx";
-
-const DeleteModal = ({
-  deleteFAQ,
-  closeDeleteModalFunction,
-  deleteModalState,
-  isLoading,
-}) => {
+import PropTypes from "prop-types";
+const DeleteModal = (props) => {
+  const {
+    deleteFAQ,
+    closeDeleteModalFunction,
+    deleteModalState,
+    isLoading,
+    deleteModalTitle,
+  } = props;
   const handleCloseModal = () => {
     closeDeleteModalFunction();
   };
@@ -14,18 +16,16 @@ const DeleteModal = ({
     <div
       className={`${
         deleteModalState ? "flex" : "hidden"
-      } fixed z-20 w-screen h-screen bg-black/10 backdrop-blur-sm left-0 top-0 flex justify-center items-center`}>
-      <div className=" bg-white shadow-md border-[1px] h-40 w-[20rem] rounded-md flex flex-col justify-start items-center ">
-        <span className="h-20 w-full text-xl flex justify-center items-center ">
-          Are you sure?
+      } fixed z-20 w-screen h-screen bg-black/10 backdrop-blur-sm left-0 top-0 flex justify-center items-center `}>
+      <div className=" bg-white shadow-md border-[1px] h-40 w-[20rem] rounded-md flex flex-col justify-start items-center overflow-hidden">
+        <span className="h-20 w-full text-xl flex justify-center items-center overflow-hidden">
+          {deleteModalTitle ? deleteModalTitle : " Are you sure?"}
         </span>
         <div className="w-full flex-1 flex  justify-center items-center gap-5">
           <button
             disabled={isLoading}
             className="w-[8rem] rounded-sm bg-red-600 text-white h-[2.2rem] flex justify-center items-center"
-            onClick={() => {
-              deleteFAQ();
-            }}>
+            onClick={deleteFAQ}>
             <span className="flex-1 text-lg">Delete</span>
             <span className="w-10 h-full justify-center items-center flex rounded-r-md">
               <MdDeleteOutline size={25} />
@@ -47,5 +47,11 @@ const DeleteModal = ({
     </div>
   );
 };
-
+DeleteModal.prototypes = {
+  deleteModalState: PropTypes.boolean,
+  closeDeleteModalFunction: PropTypes.func,
+  deleteFAQ: PropTypes.number,
+  isLoading: PropTypes.boolean,
+  deleteModalTitle: PropTypes.string,
+};
 export default DeleteModal;

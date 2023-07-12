@@ -128,7 +128,7 @@ const HomePage = () => {
     dispatch({ type: GET_USER });
   }, [dispatch]);
 
-  const user = useSelector((state) => state.user.uesr);
+  const user = useSelector((state) => state.user.user);
   console.log(user);
   return (
     <HomeLayout>
