@@ -1,18 +1,17 @@
 import FAQModal from "../Component/FAQModal/FAQModal";
+import { action } from "@storybook/addon-actions";
 
 export default {
   title: "Components/FAQModal",
   component: FAQModal,
-  argTypes: {
-    onclick: { action: "clicked" },
-  },
+  argTypes: {},
 };
 
 const Template = (args) => <FAQModal {...args} />;
-
+export const Default = Template.bind({});
 export const FAQStory = Template.bind({});
 FAQStory.args = {
-  toggleModal: " () => {}",
-  modalState: 'true',
-  editDocData: "{}",
+  toggleModal: action("Change the toggle state"),
+  modalState: true,
+  editDocData: {},
 };

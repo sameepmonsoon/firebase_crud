@@ -25,6 +25,7 @@ import { queryClient } from "../main";
 import { signOut } from "firebase/auth";
 import { logoutUser } from "../Store/authSlice";
 import { GET_USER } from "../Store/user";
+import GlobalButton from "../Component/GlobalButton/GlobalButton";
 const HomePage = () => {
   const { currentuser } = useSelector((state) => state.auth);
   const { isAdminRole } = useContext(AuthContext);
@@ -165,16 +166,15 @@ const HomePage = () => {
         <div className="md:min-h-[3rem] bg-blue-600  p-2 md:p-1 min-h-[5.5rem] relative w-full flex flex-col  md:flex-row justify-start md:justify-between gap-2 md:gap-10  items-start md:items-center text-md sm:text-xl font-[500] text-white">
           Frequently Asked Questions
           {isAdminRole && (
-            <div
-              onClick={handeAddNewFAQ}
-              className="sm:w-[7rem] h-[1.8rem] font-[400] hover:bg-blue-700 gap-0 sm:h-[2.2rem] flex justify-start items-center text-sm sm:text-[1rem] lg:text-md border-[1px] rounded-[0.2rem] cursor-pointer text-white  hover:border-white border-gray-100/90">
-              <span className="h-full w-[70%] flex justify-center items-center">
-                Add FAQ
-              </span>
-              <span className="w-[2rem]  h-full flex justify-center items-center rounded-r-sm ">
+            <GlobalButton
+              handleClick={handeAddNewFAQ}
+              buttonTitle={"Add FAQ"}
+              buttonIcon={
                 <IoAdd size={25} className="group-hover:text-blue-800" />
-              </span>
-            </div>
+              }
+              color=""
+              size="medium"
+            />
           )}
         </div>
         <FAQModal

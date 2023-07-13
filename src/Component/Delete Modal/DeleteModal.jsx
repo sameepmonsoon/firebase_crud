@@ -43,11 +43,13 @@ const DeleteModal = (props) => {
     </div>
   );
 };
-DeleteModal.prototypes = {
-  deleteModalState: PropTypes.boolean,
+
+DeleteModal.propTypes = {
+  deleteModalState: PropTypes.bool,
   closeDeleteModalFunction: PropTypes.func,
-  deleteFAQ: PropTypes.number,
-  isLoading: PropTypes.boolean,
+  deleteFAQ: PropTypes.func,
+  isLoading: PropTypes.bool,
   deleteModalTitle: PropTypes.string,
 };
+
 export default DeleteModal;

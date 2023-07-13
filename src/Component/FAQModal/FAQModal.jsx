@@ -19,12 +19,10 @@ import {
 import { ReactQuillCompressor } from "../../services/ReactQuillCompressor/ReactQuillCompressor";
 import { queryClient } from "../../main";
 import { useSelector } from "react-redux";
-const FAQModal = ({ modalState, toggleModal, editDocData }) => {
+const FAQModal = (props) => {
+  const { modalState, toggleModal, editDocData } = props;
   const { currentuser } = useSelector((state) => state.auth);
-  // context
-  // const { currentUser } = useContext(AuthContext);
 
-  // states
   const [isLoading, setIsLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [postData, setPostData] = useState({});
@@ -267,9 +265,10 @@ const FAQModal = ({ modalState, toggleModal, editDocData }) => {
   );
 };
 
-FAQModal.prototype = {
+FAQModal.propTypes = {
   modalState: PropTypes.func,
-  toggleModal: PropTypes.boolean,
+  toggleModal: PropTypes.bool,
   editDocData: PropTypes.object,
 };
+
 export default FAQModal;
