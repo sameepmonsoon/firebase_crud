@@ -22,12 +22,10 @@ import { useSelector } from "react-redux";
 const FAQModal = (props) => {
   const { modalState, toggleModal, editDocData } = props;
   const { currentuser } = useSelector((state) => state.auth);
-
   const [isLoading, setIsLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [postData, setPostData] = useState({});
   const [editorContent, setEditorContent] = useState("");
-
   // refs
   const inputRef = useRef();
   const quillRef = useRef();

@@ -22,18 +22,18 @@
 
 body {
   overflow: hidden;
-  /* ::-webkit-scrollbar {
-    width: 4px;
-  } */
+}
+::-webkit-scrollbar {
+  width: 4px;
+}
 
-  /* ::-webkit-scrollbar-track {
-    background-color: rgb(223, 223, 223);
-    border-radius: 3px;
-  } */
+::-webkit-scrollbar-track {
+  background-color: rgb(223, 223, 223);
+  border-radius: 3px;
+}
 
-  /* ::-webkit-scrollbar-thumb {
-    background-color: rgb(126, 126, 126);
-    border-radius: 10px;
-    height: 5px;
-  } */
+::-webkit-scrollbar-thumb {
+  background-color: rgb(126, 126, 126);
+  border-radius: 10px;
+  height: 5px;
 }

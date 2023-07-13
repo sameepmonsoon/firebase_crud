@@ -4,7 +4,9 @@ import { action } from "@storybook/addon-actions";
 export default {
   title: "Components/FAQModal",
   component: FAQModal,
-  argTypes: {},
+  argTypes: {
+    // editDocData: { control: "object" },
+  },
 };
 
 const Template = (args) => <FAQModal {...args} />;

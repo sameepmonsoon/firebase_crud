@@ -11,10 +11,5 @@ const TemplateOne = (args) => <Button {...args} />;
 export const Default = TemplateOne.bind({});
 Default.args = {
   title: "Button",
+  color: "",
 };
-
-// export const PrimaryNav = {
-//   args: {
-//     title: "",
-//   },
-// };
