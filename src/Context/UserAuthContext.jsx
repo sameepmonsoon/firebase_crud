@@ -7,7 +7,7 @@ import {
 } from "firebase/auth";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useDispatch } from "react-redux";
-import { loginUser } from "../Store/authSlice.jsx";
+import { loginUser } from "../Store/authSlice.js";
 export const AuthContext = createContext(null);
 const UserAuthContextProvider = ({ children }) => {
   const dispatch = useDispatch();

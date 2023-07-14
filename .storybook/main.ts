@@ -8,6 +8,7 @@ const config: StorybookConfig = {
     "@storybook/addon-actions",
     "@storybook/addon-essentials",
     "@storybook/addon-styling",
+    "storybook-addon-react-router-v6",
   ],
   framework: {
     name: "@storybook/react-vite",

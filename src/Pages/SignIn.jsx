@@ -52,13 +52,13 @@ const SignIn = () => {
             loginUser({
               email: user.user.email,
               uid: user.user.uid,
-              displayName: user.user.displayName,
+              displayName: user?.user?.displayName,
             })
           );
 
           toastMessageSuccess(
             `Welcome! ${
-              user.user.displayName != null ? user.user.displayName : ""
+              user?.user?.displayName != null ? user?.user.displayName : ""
             }`
           );
           // afterLogin();

@@ -16,17 +16,23 @@ import {
 } from "../services/ToastMessage/ToastMessage";
 import DeleteModal from "../Component/Delete Modal/DeleteModal";
 import ReactQuill from "react-quill";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 import { FaqLoadingSkeleton } from "../Component/FAQ_loading_skeleton/FaqLoadingSkeleton";
 import { useDispatch, useSelector } from "react-redux";
 import { CiUser } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
-import { queryClient } from "../main";
 import { signOut } from "firebase/auth";
 import { logoutUser } from "../Store/authSlice";
 import { GET_USER } from "../Store/user";
 import GlobalButton from "../Component/GlobalButton/GlobalButton";
 const HomePage = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
   const { currentuser } = useSelector((state) => state.auth);
   const { isAdminRole } = useContext(AuthContext);
   const [openModal, setOpenModal] = useState(false);
@@ -133,7 +139,7 @@ const HomePage = () => {
   console.log(user);
   return (
     <HomeLayout>
-      {currentuser.displayName && (
+      {currentuser?.displayName && (
         <div className="hidden absolute top-5 left-5 rounded-full min-w-30 max-w-40 md:flex cursor-pointer justify-between px-2 items-center flex-row h-10 border-[1px] border-blue-200 hover:bg-blue-100">
           <span className=" w-[2rem] h-full flex justify-center items-center rounded-l-full">
             <CiUser size={23} />

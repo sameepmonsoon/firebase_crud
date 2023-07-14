@@ -22,7 +22,9 @@ const DeleteModal = (props) => {
         <div className="w-full flex-1 flex  justify-center items-center gap-5">
           <button
             disabled={isLoading}
-            className="w-[8rem] rounded-sm bg-red-600 text-white h-[2.2rem] flex justify-center items-center"
+            className={`${
+              isLoading ? "bg-red-300" : "bg-red-600"
+            } w-[8rem] rounded-sm  text-white h-[2.2rem] flex justify-center items-center`}
             onClick={deleteFAQ}>
             <span className="flex-1 text-lg">Delete</span>
             <span className="w-10 h-full justify-center items-center flex rounded-r-md">
@@ -32,7 +34,9 @@ const DeleteModal = (props) => {
           <button
             disabled={isLoading}
             onClick={closeDeleteModalFunction}
-            className="w-[8rem] rounded-sm bg-green-600 text-white h-[2.2rem] flex justify-center items-center">
+            className={`${
+              isLoading ? "bg-green-300" : "bg-green-600"
+            } w-[8rem] rounded-sm  text-white h-[2.2rem] flex justify-center items-center`}>
             <span className="flex-1 text-lg">Cancel</span>
             <span className="w-10  h-full justify-center items-center flex rounded-r-sm">
               <RxCross1 size={23} />

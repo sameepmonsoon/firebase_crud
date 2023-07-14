@@ -17,11 +17,12 @@ import {
   toastMessageSuccess,
 } from "../../services/ToastMessage/ToastMessage";
 import { ReactQuillCompressor } from "../../services/ReactQuillCompressor/ReactQuillCompressor";
-import { queryClient } from "../../main";
-import { useSelector } from "react-redux";
+import { QueryClient } from "@tanstack/react-query";
+// import { useSelector } from "react-redux";
 const FAQModal = (props) => {
+  const queryClient = new QueryClient({});
   const { modalState, toggleModal, editDocData } = props;
-  const { currentuser } = useSelector((state) => state.auth);
+  // const { currentuser } = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [postData, setPostData] = useState({});
@@ -72,7 +73,7 @@ const FAQModal = (props) => {
     const submittedData = {
       title: postData?.title,
       body: updatedContent,
-      userId: currentuser?.uid,
+      // userId: currentuser?.uid,
     };
     if (
       postData?.postId &&
@@ -143,6 +144,8 @@ const FAQModal = (props) => {
       setIsLoading(false);
     }
   }, [formErrors]);
+
+  // return <h1>Hello</h1>;
 
   return (
     <div
@@ -264,8 +267,8 @@ const FAQModal = (props) => {
 };
 
 FAQModal.propTypes = {
-  modalState: PropTypes.func,
-  toggleModal: PropTypes.bool,
+  modalState: PropTypes.bool,
+  toggleModal: PropTypes.func,
   editDocData: PropTypes.object,
 };
 
