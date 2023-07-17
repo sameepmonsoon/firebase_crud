@@ -83,7 +83,7 @@ const SignUp = () => {
                 });
             }
             toastMessageSuccess(`Welcome! ${formValues?.username}`);
-            await updateProfile(firestoreAuth?.currentUser, {
+            await updateProfile(res?.user, {
               displayName: formValues?.username,
             }).then(() => {
               // afterLogin();
