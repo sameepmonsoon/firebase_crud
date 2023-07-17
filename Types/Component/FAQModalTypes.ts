@@ -1,5 +1,11 @@
+export interface editDocDataTypes {
+  title?: string;
+  body?: string;
+  postId?: string;
+  image?: string;
+}
 export default interface FAQModalInterface {
   modalState: boolean;
   toggleModal: () => any;
-  editDocData: { title?: string | any; body?: string | any };
+  editDocData: editDocDataTypes;
 }

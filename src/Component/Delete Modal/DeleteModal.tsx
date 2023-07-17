@@ -16,13 +16,22 @@ const DeleteModal: React.FC<DeleteFAQModalInterface> = (
   const [currentModalState, setCurrentModalState] = useState(deleteModalState);
   useEffect(() => {
     setCurrentModalState(deleteModalState);
-  }, [deleteModalState]);
+  }, [deleteModalState, setCurrentModalState]);
   return (
     <div
       className={`${
         currentModalState ? "flex" : "hidden"
-      } fixed z-20 w-screen h-screen bg-black/10 backdrop-blur-sm left-0 top-0 flex justify-center items-center `}>
-      <div className=" bg-white shadow-md border-[1px] h-40 w-[20rem] rounded-md flex flex-col justify-start items-center overflow-hidden">
+      } fixed z-10 w-screen h-screen bg-black/10 backdrop-blur-sm left-0 top-0 flex justify-center items-center `}>
+      <div
+        className={` absolute h-full w-full z-[20]`}
+        onClick={() => {
+          setCurrentModalState(false);
+          closeDeleteModalFunction();
+        }}>
+        &nbsp;
+      </div>
+
+      <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-[30] bg-white shadow-md border-[1px] h-40 w-[20rem] rounded-md flex flex-col justify-start items-center overflow-hidden">
         <span className="h-20 w-full text-xl flex justify-center items-center overflow-hidden">
           {deleteModalTitle ? deleteModalTitle : " Are you sure?"}
         </span>

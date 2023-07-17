@@ -25,6 +25,7 @@ import { signOut } from "firebase/auth";
 import { logoutUser } from "../Store/authSlice";
 import { GET_USER } from "../Store/user";
 import GlobalButton from "../Component/GlobalButton/GlobalButton";
+import { editDocDataTypes } from "../../Types/Component/FAQModalTypes";
 const HomePage = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -39,7 +40,7 @@ const HomePage = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selctedIndex, setSelectedIndex] = useState(null);
-  const [editData, setEditData] = useState({});
+  const [editData, setEditData] = useState<editDocDataTypes>({});
   const [deleteFaqId, setDeleteFaqId] = useState(null);
   const [previewImageUrl, setPreviewImageUrl] = useState<any>([]);
   const handleModalToggle = () => {
@@ -99,7 +100,11 @@ const HomePage = () => {
       setIsButtonDisabled(true);
     }
   };
-  const handleEdit = async (id, index, data) => {
+  const handleEdit = async (
+    id: string,
+    index: number,
+    data: editDocDataTypes
+  ) => {
     setEditData({
       ...editData,
       ["postId"]: id,

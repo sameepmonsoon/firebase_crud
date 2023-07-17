@@ -15,7 +15,7 @@ export const Default = Template.bind({});
 Default.args = {
   deleteFAQ: () => {},
   closeDeleteModalFunction: () => {},
-  isLoading: false,
+  isLoading: true,
   deleteModalState: true,
   deleteModalTitle: "Delete",
 };

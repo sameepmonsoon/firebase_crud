@@ -22,21 +22,18 @@ import FAQModalInterface from "../../../Types/Component/FAQModalTypes";
 
 interface PostData {
   title?: string | any;
-  postId?: string;
-}
-interface FormErros {
-  title?: string | null;
-  postId?: string | null;
   body?: string | null;
+  postId?: string | null;
 }
+
 const FAQModal: React.FC<FAQModalInterface> = (props: FAQModalInterface) => {
   const { modalState, toggleModal, editDocData } = props;
   const queryClient = new QueryClient({});
   const { currentuser } = useSelector((state: any) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
-  const [formErrors, setFormErrors] = useState<FormErros>({});
+  const [formErrors, setFormErrors] = useState<PostData>({});
   const [postData, setPostData] = useState<PostData>({});
-  const [editorContent, setEditorContent] = useState("");
+  const [editorContent, setEditorContent] = useState<any>({});
   // refs
   const inputRef: React.MutableRefObject<any> = useRef();
   const quillRef: React.MutableRefObject<any> = useRef();
@@ -55,7 +52,7 @@ const FAQModal: React.FC<FAQModalInterface> = (props: FAQModalInterface) => {
         .then((res: Array<any>) => {
           toastMessageSuccess("FAQ Added Successfully.");
           setPostData({});
-          setEditorContent("");
+          setEditorContent({});
           toggleModal();
           queryClient.invalidateQueries({ queryKey: ["faq"] });
           resolve(res);
@@ -111,7 +108,7 @@ const FAQModal: React.FC<FAQModalInterface> = (props: FAQModalInterface) => {
   };
 
   const handleToggleModal = () => {
-    setEditorContent("");
+    setEditorContent({});
     toggleModal();
   };
 
