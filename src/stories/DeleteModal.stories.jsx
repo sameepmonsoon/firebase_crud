@@ -10,6 +10,14 @@ export default {
 };
 
 const Template = (args) => <DeleteModal {...args} />;
+export const Default = Template.bind({});
+Default.args = {
+  deleteFAQ: () => {},
+  closeDeleteModalFunction: () => {},
+  isLoading: false,
+  deleteModalState: true,
+  deleteModalTitle: "Delete",
+};
 
 export const DeleteModalStory = Template.bind({});
 DeleteModalStory.args = {
