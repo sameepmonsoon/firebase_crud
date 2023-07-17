@@ -3,7 +3,7 @@ import { MdAdd, MdDeleteOutline } from "react-icons/md";
 import HomeLayout from "../Layout/HomeLayout";
 import { FiEdit } from "react-icons/fi";
 import { IoAdd, IoLogOutOutline } from "react-icons/io5";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import FAQModal from "../Component/FAQModal/FAQModal";
 import { AuthContext } from "../Context/UserAuthContext";
 import { useContext } from "react";
@@ -33,15 +33,15 @@ const HomePage = () => {
       },
     },
   });
-  const { currentuser } = useSelector((state) => state.auth);
+  const { currentuser } = useSelector((state: any) => state.auth);
   const { isAdminRole } = useContext(AuthContext);
   const [openModal, setOpenModal] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selctedIndex, setSelectedIndex] = useState(null);
-  const [editData, setEditData] = useState(null);
+  const [editData, setEditData] = useState({});
   const [deleteFaqId, setDeleteFaqId] = useState(null);
-  const [previewImageUrl, setPreviewImageUrl] = useState([]);
+  const [previewImageUrl, setPreviewImageUrl] = useState<any>([]);
   const handleModalToggle = () => {
     setOpenModal(!openModal);
   };
@@ -111,13 +111,13 @@ const HomePage = () => {
   };
 
   const handeAddNewFAQ = () => {
-    setEditData(null);
+    setEditData({});
     handleModalToggle();
   };
 
   //handles image preview when clicked react-quill body/faq
-  const handleFAQContentClick = (event) => {
-    const clickedElement = event.target;
+  const handleFAQContentClick = (event: React.ChangeEvent<HTMLDivElement>) => {
+    const clickedElement: any = event.target;
     if (clickedElement.tagName === "IMG") {
       setPreviewImageUrl([clickedElement.src]);
       document?.getElementById("imagePreview")?.requestFullscreen();
@@ -135,7 +135,7 @@ const HomePage = () => {
     dispatch({ type: GET_USER });
   }, [dispatch]);
 
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector((state: any) => state.user.user);
   console.log(user);
   return (
     <HomeLayout>
@@ -178,7 +178,7 @@ const HomePage = () => {
               buttonIcon={
                 <IoAdd size={25} className="group-hover:text-blue-800" />
               }
-              color=""
+              colorType=""
               size="medium"
             />
           )}
@@ -277,9 +277,7 @@ const HomePage = () => {
                       className={`w-full min-h-[4rem]  text-gray-600 p-1 py-2 flex justify-start items-center flex-wrap text-[14px] sm:text-[17px] flex-col border-t-[1px] border-blue-200`}>
                       <div
                         className="w-full z-1"
-                        onClick={(e) => {
-                          handleFAQContentClick(e);
-                        }}>
+                        onClick={(e: any) => handleFAQContentClick(e)}>
                         <ReactQuill
                           id="read-quill"
                           value={currentPostData?.body}

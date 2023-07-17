@@ -1,5 +1,7 @@
-import PropTypes from "prop-types";
-const Button = (props) => {
+import ButtonPropsTypes from "../../Types/Component/ButtonPropsTypes";
+import React from "react";
+
+const Button: React.FC = (props: ButtonPropsTypes) => {
   const {
     title,
     handleClick,
@@ -13,11 +15,11 @@ const Button = (props) => {
     hoverColorBackground,
   } = props;
   const handleMouseOver = () => {
-    const element = document.getElementById("button");
+    const element: HTMLElement | any = document.getElementById("button");
     element.style.backgroundColor = hoverColorBackground;
   };
   const handleMouseLeave = () => {
-    const element = document.getElementById("button");
+    const element: HTMLElement | any = document.getElementById("button");
     element.style.backgroundColor = backgroundColor;
   };
   return (
@@ -41,29 +43,18 @@ const Button = (props) => {
         padding: "10px",
         borderRadius: borderRadius !== 0 ? `${borderRadius}px` : "0px",
         borderWidth:
-          borderSize === 0 || borderSize < 7
+          borderSize === 0 || (borderSize && borderSize < 7)
             ? `${borderSize}px `
-            : borderSize > 7
+            : borderSize && borderSize > 7
             ? "7px"
             : "1px",
         color: textColor !== "" ? textColor : "black",
-        overflow:'hidden'
+        overflow: "hidden",
       }}>
       {title}
     </button>
   );
 };
 
-Button.propTypes = {
-  title: PropTypes.string || PropTypes.node,
-  backgroundColor: PropTypes.string,
-  hoverColorBackground: PropTypes.string,
-  borderColor: PropTypes.string,
-  textColor: PropTypes.string,
-  handleClick: PropTypes.func,
-  borderSize: PropTypes.number,
-  borderRadius: PropTypes.number,
-  buttonWidth: PropTypes.number,
-  buttonHeight: PropTypes.number,
-};
+/** Primary UI component for the button. */
 export default Button;

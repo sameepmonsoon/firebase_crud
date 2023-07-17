@@ -1,8 +1,11 @@
 import { MdDeleteOutline } from "react-icons/md";
 import { RxCross1 } from "react-icons/rx";
-import PropTypes from "prop-types";
+import React from "react";
 import { useEffect, useState } from "react";
-const DeleteModal = (props) => {
+import DeleteFAQModalInterface from "../../../Types/Component/DeleteFAQModalTypes";
+const DeleteModal: React.FC<DeleteFAQModalInterface> = (
+  props: DeleteFAQModalInterface
+) => {
   const {
     deleteFAQ,
     closeDeleteModalFunction,
@@ -53,14 +56,6 @@ const DeleteModal = (props) => {
       </div>
     </div>
   );
-};
-
-DeleteModal.propTypes = {
-  deleteModalState: PropTypes.bool,
-  closeDeleteModalFunction: PropTypes.func,
-  deleteFAQ: PropTypes.func,
-  isLoading: PropTypes.bool,
-  deleteModalTitle: PropTypes.string,
 };
 
 export default DeleteModal;

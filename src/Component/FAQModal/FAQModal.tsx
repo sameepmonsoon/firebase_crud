@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { PiSpinnerBold } from "react-icons/pi";
 import { RxCross1 } from "react-icons/rx";
 import { BsImages } from "react-icons/bs";
@@ -7,7 +7,6 @@ import "react-quill/dist/quill.snow.css";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { firestoreDb } from "../../Utils/Firebase";
 import "./FAQModal.css";
-import PropTypes from "prop-types";
 import {
   isQuillEmpty,
   validateFAQPost,
@@ -18,39 +17,50 @@ import {
 } from "../../services/ToastMessage/ToastMessage";
 import { ReactQuillCompressor } from "../../services/ReactQuillCompressor/ReactQuillCompressor";
 import { QueryClient } from "@tanstack/react-query";
-// import { useSelector } from "react-redux";
-const FAQModal = (props) => {
-  const queryClient = new QueryClient({});
+import { useSelector } from "react-redux";
+import FAQModalInterface from "../../../Types/Component/FAQModalTypes";
+
+interface PostData {
+  title?: string | any;
+  postId?: string;
+}
+interface FormErros {
+  title?: string | null;
+  postId?: string | null;
+  body?: string | null;
+}
+const FAQModal: React.FC<FAQModalInterface> = (props: FAQModalInterface) => {
   const { modalState, toggleModal, editDocData } = props;
-  // const { currentuser } = useSelector((state) => state.auth);
+  const queryClient = new QueryClient({});
+  const { currentuser } = useSelector((state: any) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
-  const [formErrors, setFormErrors] = useState({});
-  const [postData, setPostData] = useState({});
+  const [formErrors, setFormErrors] = useState<FormErros>({});
+  const [postData, setPostData] = useState<PostData>({});
   const [editorContent, setEditorContent] = useState("");
   // refs
-  const inputRef = useRef();
-  const quillRef = useRef();
+  const inputRef: React.MutableRefObject<any> = useRef();
+  const quillRef: React.MutableRefObject<any> = useRef();
 
   //function
   //handle form value change
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
     setPostData({ ...postData, [name]: value });
   };
 
   //handle add and update doc function
-  function handleUpdateOrAddDoc(updateOrAddFunction, submittedData) {
+  function handleUpdateOrAddDoc(updateOrAddFunction, submittedData?: any) {
     return new Promise((resolve, reject) => {
       updateOrAddFunction(submittedData)
-        .then(() => {
+        .then((res: Array<any>) => {
           toastMessageSuccess("FAQ Added Successfully.");
           setPostData({});
           setEditorContent("");
           toggleModal();
           queryClient.invalidateQueries({ queryKey: ["faq"] });
-          resolve();
+          resolve(res);
         })
-        .catch(() => {
+        .catch((err: { [key: string]: string }) => {
           toastMessageError("File to large to upload.");
           reject();
         })
@@ -61,7 +71,7 @@ const FAQModal = (props) => {
   }
 
   //form submit handler/function
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setFormErrors(validateFAQPost(postData));
@@ -73,7 +83,7 @@ const FAQModal = (props) => {
     const submittedData = {
       title: postData?.title,
       body: updatedContent,
-      // userId: currentuser?.uid,
+      userId: currentuser?.uid,
     };
     if (
       postData?.postId &&
@@ -116,7 +126,7 @@ const FAQModal = (props) => {
         const newImage = document.createElement("img");
         newImage.src = URL.createObjectURL(files[i]);
         const newHtml = newImage;
-        query.append(newHtml);
+        query?.append(newHtml);
       }
   };
 
@@ -217,7 +227,6 @@ const FAQModal = (props) => {
               />
               <ReactQuill
                 id="body"
-                name="body"
                 theme="snow"
                 ref={quillRef}
                 value={editorContent}
@@ -264,12 +273,6 @@ const FAQModal = (props) => {
       )}
     </div>
   );
-};
-
-FAQModal.propTypes = {
-  modalState: PropTypes.bool,
-  toggleModal: PropTypes.func,
-  editDocData: PropTypes.object,
 };
 
 export default FAQModal;

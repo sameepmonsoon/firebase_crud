@@ -1,5 +1,6 @@
 import Button from "./Button";
 import { AiFillHome } from "react-icons/ai";
+import React from "react";
 export default {
   title: "Components/Button",
   component: Button,

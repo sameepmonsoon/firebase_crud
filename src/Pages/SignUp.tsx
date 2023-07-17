@@ -1,5 +1,5 @@
 import HomeLayout from "../Layout/HomeLayout";
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "../Context/UserAuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { validateUserForm } from "../services/HandleFormValidation/HandleFormValidation";
@@ -14,11 +14,12 @@ import {
 } from "../services/ToastMessage/ToastMessage";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../Store/authSlice";
+import FormValues from "../../Types/Page/SignInSignUpTypes";
 const SignUp = () => {
   const dispatch = useDispatch();
   const { signUp } = useContext(AuthContext);
-  const [formValues, setFormValues] = useState([]);
-  const [formErrors, setFormErrors] = useState({});
+  const [formValues, setFormValues] = useState<FormValues>({});
+  const [formErrors, setFormErrors] = useState<any>({});
   const [togglePassword, setTogglePassword] = useState("password");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -187,7 +188,6 @@ const SignUp = () => {
           htmlFor="Role"
           className="w-full flex justify-center items-center flex-col text-sm gap-1">
           <select
-            type="text"
             name="roles"
             id="roles"
             required

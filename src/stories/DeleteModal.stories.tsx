@@ -1,5 +1,6 @@
 import DeleteModal from "../Component/Delete Modal/DeleteModal";
 import { action } from "@storybook/addon-actions";
+import React from "react";
 export default {
   title: "Components/Modal",
   component: DeleteModal,

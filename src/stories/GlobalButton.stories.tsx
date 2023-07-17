@@ -3,7 +3,7 @@ import { action } from "@storybook/addon-actions";
 import { FiEdit } from "react-icons/fi";
 import { CiUser } from "react-icons/ci";
 import { IoAdd, IoLogOutOutline } from "react-icons/io5";
-
+import React from "react";
 export default {
   title: "Components/GlobalButton",
   Component: GlobalButton,

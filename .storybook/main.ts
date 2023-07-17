@@ -9,6 +9,7 @@ const config: StorybookConfig = {
     "@storybook/addon-essentials",
     "@storybook/addon-styling",
     "storybook-addon-react-router-v6",
+    "@storybook/addon-storysource",
   ],
   framework: {
     name: "@storybook/react-vite",
@@ -16,6 +17,7 @@ const config: StorybookConfig = {
   },
   docs: {
     autodocs: "tag",
+    defaultName: "Documentation",
   },
 };
 export default config;

@@ -1,5 +1,5 @@
 import HomeLayout from "../Layout/HomeLayout";
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "../Context/UserAuthContext";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -11,13 +11,15 @@ import {
   toastMessageSuccess,
 } from "../services/ToastMessage/ToastMessage";
 import { useDispatch } from "react-redux";
-// import { collection, getDocs, query, where } from "firebase/firestore";
-// import { firestoreDb } from "../Utils/Firebase";
-const SignIn = () => {
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { firestoreDb } from "../Utils/Firebase";
+import FormValues from "../../Types/Page/SignInSignUpTypes";
+
+const SignIn: React.FC = () => {
   const dispatch = useDispatch();
   const { login } = useContext(AuthContext);
-  const [formValues, setFormValues] = useState([]);
-  const [formError, setFormError] = useState([]);
+  const [formValues, setFormValues] = useState<FormValues>({});
+  const [formError, setFormError] = useState<any>([]);
   const [togglePassword, setTogglePassword] = useState("password");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();

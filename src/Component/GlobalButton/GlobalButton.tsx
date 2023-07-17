@@ -1,5 +1,9 @@
 import PropTypes from "prop-types";
-const GlobalButton = (props) => {
+import React from "react";
+import GlobalButtonInterface from "../../../Types/Component/GlobalButtonType";
+const GlobalButton: React.FC<GlobalButtonInterface> = (
+  props: GlobalButtonInterface
+) => {
   const { handleClick, buttonIcon, buttonTitle, colorType, size } = props;
   const colorVariants = {
     blue: "bg-blue-200 hover:bg-blue-500 text-black",
@@ -43,14 +47,6 @@ const GlobalButton = (props) => {
       </span>
     </div>
   );
-};
-
-GlobalButton.propTypes = {
-  handleClick: PropTypes.func,
-  buttonIcon: PropTypes.node,
-  buttonTitle: PropTypes.string,
-  colorType: PropTypes.string,
-  size: PropTypes.string,
 };
 
 export default GlobalButton;

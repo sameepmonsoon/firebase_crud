@@ -1,26 +1,26 @@
-import HomePage from "../Pages/HomePage";
-// import { within, userEvent } from "@storybook/testing-library";
+import FAQModal from "../Component/FAQModal/FAQModal";
+import { action } from "@storybook/addon-actions";
+import React from "react";
 import { Provider } from "react-redux";
 import userReducer from "../Store/user";
 import { configureStore } from "@reduxjs/toolkit";
 import authSliceReducer from "../Store/authSlice";
 import UserAuthContextProvider from "../Context/UserAuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-export default {
-  title: "Pages/Home",
-  component: HomePage,
-  parameters: {
-    reactRouter: {
-      routePath: "/signin",
-    },
-  },
-};
 const store = configureStore({
   reducer: { auth: authSliceReducer, user: userReducer },
 });
+export default {
+  title: "Components/FAQModal",
+  component: FAQModal,
+  tags: ["autodocs"],
+  argTypes: {
+    editDocData: { control: "object" },
+  },
+  args: { modalState: false },
+};
 
 const Template = (args) => {
-  // const Mycontext = useContext(AuthContext);
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -32,17 +32,16 @@ const Template = (args) => {
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <UserAuthContextProvider>
-          <HomePage {...args} />
+          <FAQModal {...args} />
         </UserAuthContextProvider>
       </QueryClientProvider>
     </Provider>
   );
 };
-
-export const HomePageFAQ = Template.bind({});
-// export const HomePageFAQOpen = Template.bind({});
-// HomePageFAQOpen.args = {};
-// HomePageFAQOpen.play = async ({ canvasElement }) => {
-//   const canvas = within(canvasElement);
-//   const Button = canvas.getByTestId("FAQ-header");
-// };
+export const Default = Template.bind({});
+export const FAQStory = Template.bind({});
+FAQStory.args = {
+  toggleModal: action("Change the toggle state"),
+  modalState: false,
+  editDocData: {},
+};

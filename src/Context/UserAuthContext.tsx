@@ -8,11 +8,21 @@ import {
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../Store/authSlice.js";
-export const AuthContext = createContext(null);
-const UserAuthContextProvider = ({ children }) => {
+
+import React from "react";
+import UserAuthContextTypes from "../../Types/Context/UserAuthContextTypes";
+
+export const AuthContext = createContext<UserAuthContextTypes | any>(null);
+type ProviderProps = {
+  children: React.JSX.Element;
+};
+const UserAuthContextProvider: React.FC<ProviderProps> = ({
+
+  children,
+}: ProviderProps) => {
   const dispatch = useDispatch();
   // state for current user
-  const [currentUser, setCurrentUser] = useState(
+  const [currentUser, setCurrentUser] = useState<string | any>(
     localStorage.getItem("currentUser")
   );
   const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +66,7 @@ const UserAuthContextProvider = ({ children }) => {
   // effect to fetch the currentUser
 
   useEffect(() => {
-    const subscribe = firestoreAuth.onAuthStateChanged((user) => {
+    const subscribe = firestoreAuth.onAuthStateChanged((user: any) => {
       if (user) {
         dispatch(
           loginUser({
@@ -80,7 +90,7 @@ const UserAuthContextProvider = ({ children }) => {
 
   // authcontext provider values
 
-  const value = {
+  const values: UserAuthContextTypes = {
     isLoading,
     currentUser,
     login,
@@ -88,7 +98,7 @@ const UserAuthContextProvider = ({ children }) => {
     logOut,
     isAdminRole,
   };
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;
 };
 
 export default UserAuthContextProvider;
