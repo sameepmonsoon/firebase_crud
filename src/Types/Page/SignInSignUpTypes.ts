@@ -1,6 +1,6 @@
-export default interface FormValues {
-  password?: string | any;
-  email?: string;
-  username?: string | any;
-  roles?: string | any;
+export default interface SignUpTypes {
+  password: string;
+  email: string;
+  username: string;
+  roles: string;
 }

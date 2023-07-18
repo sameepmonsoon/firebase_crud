@@ -8,16 +8,14 @@ import {
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../Store/authSlice.js";
-
+import UserAuthContextTypes from "../Types/Context/UserAuthContextTypes.js";
 import React from "react";
-import UserAuthContextTypes from "../../Types/Context/UserAuthContextTypes";
 
 export const AuthContext = createContext<UserAuthContextTypes | any>(null);
 type ProviderProps = {
   children: React.JSX.Element;
 };
 const UserAuthContextProvider: React.FC<ProviderProps> = ({
-
   children,
 }: ProviderProps) => {
   const dispatch = useDispatch();

@@ -13,15 +13,24 @@ import {
 import { useDispatch } from "react-redux";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { firestoreDb } from "../Utils/Firebase";
-import FormValues from "../../Types/Page/SignInSignUpTypes";
+import FormValues from "../Types/Page/SignInSignUpTypes";
+import RequestInterface from "../Types/Page/ApiRequestResponseType";
 
 const SignIn: React.FC = () => {
   const dispatch = useDispatch();
   const { login } = useContext(AuthContext);
-  const [formValues, setFormValues] = useState<FormValues>({});
-  const [formError, setFormError] = useState<any>([]);
-  const [togglePassword, setTogglePassword] = useState("password");
-  const [isLoading, setIsLoading] = useState(false);
+  const [formValues, setFormValues] = useState<Partial<FormValues>>({
+    password: "",
+    email: "",
+    username: "",
+  });
+  const [formError, setFormError] = useState<Partial<FormValues>>({
+    password: "",
+    email: "",
+    username: "",
+  });
+  const [togglePassword, setTogglePassword] = useState<string>("password");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   //   function for togglePassword
   const handleTogglePassword = () => {
@@ -34,22 +43,22 @@ const SignIn: React.FC = () => {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
     setFormValues({ ...formValues, [name]: value });
   };
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (formValues.password.trim().length === 0) {
+    if (formValues.password && formValues?.password.trim().length === 0) {
       setFormError({ ["password"]: "Please enter your password." });
       setIsLoading(false);
     }
-    if (formValues.password.trim().length > 0) {
+    if (formValues.password && formValues?.password.trim().length > 0) {
       setFormError({});
       await login(formValues.email, formValues.password)
-        .then(async (user) => {
+        .then(async (user: RequestInterface) => {
           dispatch(
             loginUser({
               email: user.user.email,
@@ -66,7 +75,7 @@ const SignIn: React.FC = () => {
           // afterLogin();
           navigate("/");
         })
-        .catch((err) => {
+        .catch((err: { code: string }) => {
           if (err.code === "auth/user-not-found") {
             toastMessageError("User Not found");
           }

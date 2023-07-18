@@ -3,7 +3,7 @@ import { MdAdd, MdDeleteOutline } from "react-icons/md";
 import HomeLayout from "../Layout/HomeLayout";
 import { FiEdit } from "react-icons/fi";
 import { IoAdd, IoLogOutOutline } from "react-icons/io5";
-import React, { useEffect, useState } from "react";
+import React, { Provider, useEffect, useState } from "react";
 import FAQModal from "../Component/FAQModal/FAQModal";
 import { AuthContext } from "../Context/UserAuthContext";
 import { useContext } from "react";
@@ -25,7 +25,7 @@ import { signOut } from "firebase/auth";
 import { logoutUser } from "../Store/authSlice";
 import { GET_USER } from "../Store/user";
 import GlobalButton from "../Component/GlobalButton/GlobalButton";
-import { editDocDataTypes } from "../../Types/Component/FAQModalTypes";
+import { editDocDataTypes } from "../Types/Component/FAQModalTypes";
 const HomePage = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -35,14 +35,14 @@ const HomePage = () => {
     },
   });
   const { currentuser } = useSelector((state: any) => state.auth);
-  const { isAdminRole } = useContext(AuthContext);
-  const [openModal, setOpenModal] = useState(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [selctedIndex, setSelectedIndex] = useState(null);
+  const { isAdminRole } = useContext<{ isAdminRole: boolean }>(AuthContext);
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
+  const [selctedIndex, setSelectedIndex] = useState<number | null>(null);
   const [editData, setEditData] = useState<editDocDataTypes>({});
-  const [deleteFaqId, setDeleteFaqId] = useState(null);
-  const [previewImageUrl, setPreviewImageUrl] = useState<any>([]);
+  const [deleteFaqId, setDeleteFaqId] = useState<string | null>(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string[]>([]);
   const handleModalToggle = () => {
     setOpenModal(!openModal);
   };
@@ -57,7 +57,7 @@ const HomePage = () => {
     },
   });
 
-  const handleAccordionToggle = (index) => {
+  const handleAccordionToggle = (index: number) => {
     if (selctedIndex === index) {
       setSelectedIndex(null);
     } else {
@@ -66,7 +66,7 @@ const HomePage = () => {
   };
 
   //function to set the delete id
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     setIsButtonDisabled(true);
     setOpenDeleteModal(!openDeleteModal);
     setDeleteFaqId(id);
@@ -133,15 +133,15 @@ const HomePage = () => {
   const removePreviewImage = () => {
     const element = document.getElementById("imagePreview");
     element?.remove();
-    setPreviewImageUrl("");
+    setPreviewImageUrl([]);
   };
 
   useEffect(() => {
     dispatch({ type: GET_USER });
   }, [dispatch]);
 
-  const user = useSelector((state: any) => state.user.user);
-  console.log(user);
+  // const user = useSelector((state: any) => state.user.user);
+
   return (
     <HomeLayout>
       {currentuser?.displayName && (

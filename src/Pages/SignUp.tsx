@@ -1,5 +1,5 @@
 import HomeLayout from "../Layout/HomeLayout";
-import React, { useContext, useState } from "react";
+import React, { FormEvent, useContext, useState } from "react";
 import { AuthContext } from "../Context/UserAuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { validateUserForm } from "../services/HandleFormValidation/HandleFormValidation";
@@ -8,20 +8,30 @@ import { firestoreAuth, firestoreDb } from "../Utils/Firebase";
 import { PiSpinnerBold } from "react-icons/pi";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { updateProfile } from "firebase/auth";
+import FormValues from "../Types/Page/SignInSignUpTypes";
+
 import {
   toastMessageError,
   toastMessageSuccess,
 } from "../services/ToastMessage/ToastMessage";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../Store/authSlice";
-import FormValues from "../../Types/Page/SignInSignUpTypes";
+import RequestInterface from "../Types/Page/ApiRequestResponseType";
 const SignUp = () => {
   const dispatch = useDispatch();
   const { signUp } = useContext(AuthContext);
-  const [formValues, setFormValues] = useState<FormValues>({});
-  const [formErrors, setFormErrors] = useState<any>({});
-  const [togglePassword, setTogglePassword] = useState("password");
-  const [isLoading, setIsLoading] = useState(false);
+  const [formValues, setFormValues] = useState<Partial<FormValues>>({
+    password: "",
+    email: "",
+    username: "",
+  });
+  const [formErrors, setFormErrors] = useState<Partial<FormValues>>({
+    password: "",
+    email: "",
+    username: "",
+  });
+  const [togglePassword, setTogglePassword] = useState<string>("password");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   // functions
@@ -34,18 +44,22 @@ const SignUp = () => {
       setTogglePassword("text");
     }
   };
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { value, name } = e.target;
     setFormValues({ ...formValues, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setFormErrors(validateUserForm(formValues));
     if (
       Object.keys(validateUserForm(formValues))?.length === 0 &&
+      formValues?.username &&
       formValues?.username?.trim().length > 0 &&
+      formValues?.password &&
       formValues?.password?.trim().length > 0
     ) {
       const userId = query(
@@ -61,7 +75,7 @@ const SignUp = () => {
         });
       } else {
         await signUp(formValues.email, formValues.password)
-          .then(async (res) => {
+          .then(async (res: any) => {
             dispatch(
               loginUser({
                 email: res.user.email,
@@ -91,7 +105,7 @@ const SignUp = () => {
               navigate("/");
             });
           })
-          .catch((err) => {
+          .catch((err: { code: string }) => {
             if (err.code === "auth/email-already-in-use") {
               toastMessageError("Email already in use.");
             }
