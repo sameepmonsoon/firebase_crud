@@ -10,7 +10,7 @@ import { useDispatch } from "react-redux";
 import { loginUser } from "../Store/authSlice.js";
 import UserAuthContextTypes from "../Types/Context/UserAuthContextTypes.js";
 import React from "react";
-
+type localStorageType = { uid?: string };
 export const AuthContext = createContext<UserAuthContextTypes | any>(null);
 type ProviderProps = {
   children: React.JSX.Element;
@@ -20,7 +20,7 @@ const UserAuthContextProvider: React.FC<ProviderProps> = ({
 }: ProviderProps) => {
   const dispatch = useDispatch();
   // state for current user
-  const [currentUser, setCurrentUser] = useState<string | any>(
+  const [currentUser, setCurrentUser] = useState<any>(
     localStorage.getItem("currentUser")
   );
   const [isLoading, setIsLoading] = useState(true);
